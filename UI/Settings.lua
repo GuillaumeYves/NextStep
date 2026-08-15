@@ -21,7 +21,7 @@ function Settings:Create()
     end
 
     local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-    frame:SetSize(330, 230)
+    frame:SetSize(410, 230)
     frame:SetPoint("CENTER")
     frame:SetFrameStrata("DIALOG")
     frame:SetClampedToScreen(true)
@@ -35,21 +35,21 @@ function Settings:Create()
 
     frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     frame.title:SetPoint("TOPLEFT", 20, -18)
-    frame.title:SetText("NextStep Settings")
+    frame.title:SetText(NS.L.SETTINGS_TITLE)
 
     frame.close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
     frame.close:SetPoint("TOPRIGHT", -4, -4)
 
-    frame.optional = createCheck(frame, "Show optional recommendations", -55, function(button)
+    frame.optional = createCheck(frame, NS.L.SHOW_OPTIONAL, -55, function(button)
         NS.db.settings.showOptionalRecommendations = button:GetChecked() and true or false
         NS:RequestRefresh("settings_optional", 0)
     end)
 
-    frame.lock = createCheck(frame, "Lock window", -88, function(button)
+    frame.lock = createCheck(frame, NS.L.LOCK_WINDOW, -88, function(button)
         NS.db.settings.lockWindow = button:GetChecked() and true or false
     end)
 
-    frame.remember = createCheck(frame, "Remember window position", -121, function(button)
+    frame.remember = createCheck(frame, NS.L.REMEMBER_POSITION, -121, function(button)
         NS.db.settings.rememberWindowPosition = button:GetChecked() and true or false
     end)
 
@@ -90,7 +90,7 @@ function Settings:Update()
     self.frame.optional:SetChecked(NS.db.settings.showOptionalRecommendations)
     self.frame.lock:SetChecked(NS.db.settings.lockWindow)
     self.frame.remember:SetChecked(NS.db.settings.rememberWindowPosition)
-    self.frame.maximumLabel:SetText("Maximum recommendations: " .. NS.db.settings.maximumRecommendations)
+    self.frame.maximumLabel:SetText(string.format(NS.L.MAX_RECOMMENDATIONS, NS.db.settings.maximumRecommendations))
 end
 
 function Settings:Toggle()

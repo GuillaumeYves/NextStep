@@ -6,6 +6,14 @@ NS.API.WoW = WoW
 
 local SafeCall = NS.Util.SafeCall
 
+function WoW:GetLocale()
+    local ok, locale = SafeCall:Invoke(GetLocale)
+    if ok and type(locale) == "string" and locale ~= "" then
+        return locale
+    end
+    return "enUS"
+end
+
 function WoW:IsInCombat()
     return InCombatLockdown and InCombatLockdown() == true
 end

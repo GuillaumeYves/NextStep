@@ -29,13 +29,13 @@ end
 function CharacterSummary:Update(frame, character, experience)
     character = character or {}
     experience = experience or {}
-    frame.name:SetText(character.name or "Character unavailable")
+    frame.name:SetText(character.name or NS.L.CHARACTER_UNAVAILABLE)
 
     local details = {}
     if character.level then
-        local levelText = "Level " .. tostring(character.level)
+        local levelText = string.format(NS.L.LEVEL_FORMAT, character.level)
         if type(experience.percent) == "number" and character.maxLevel and character.level < character.maxLevel then
-            levelText = levelText .. string.format(" (%.1f%% XP)", experience.percent)
+            levelText = levelText .. string.format(NS.L.XP_PROGRESS_FORMAT, experience.percent)
         end
         details[#details + 1] = levelText
     end
@@ -45,7 +45,8 @@ function CharacterSummary:Update(frame, character, experience)
     details[#details + 1] = character.specName or NS.L.SPECIALIZATION_UNAVAILABLE
     frame.details:SetText(table.concat(details, "  |  "))
 
-    local equipped = NS.Util.Formatting:ItemLevel(character.equippedItemLevel)
-    local average = NS.Util.Formatting:ItemLevel(character.averageItemLevel)
-    frame.itemLevel:SetText("Equipped " .. equipped .. "\nAverage " .. average)
+    local equipped = NS.Util.Formatting:ItemLevel(character.equippedItemLevel, NS.L.UNAVAILABLE)
+    local average = NS.Util.Formatting:ItemLevel(character.averageItemLevel, NS.L.UNAVAILABLE)
+    frame.itemLevel:SetText(string.format(NS.L.EQUIPPED_FORMAT, equipped)
+        .. "\n" .. string.format(NS.L.AVERAGE_FORMAT, average))
 end

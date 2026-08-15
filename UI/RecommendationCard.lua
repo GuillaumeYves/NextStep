@@ -49,7 +49,7 @@ function RecommendationCard:Create(parent)
 end
 
 function RecommendationCard:SetData(card, recommendation)
-    local label = NS.Constants.IMPORTANCE_LABEL[recommendation.importance] or recommendation.importance
+    local label = NS.L.IMPORTANCE_LABELS[recommendation.importance] or recommendation.importance
     local color = colors[recommendation.importance] or colors.USEFUL
     card.importance:SetText(label)
     card.importance:SetTextColor(color[1], color[2], color[3])

@@ -1,16 +1,15 @@
 ## Interface: 120100
 ## Title: NextStep
 ## Notes: Know what matters for you next.
+## Notes-frFR: Sachez ce qui compte pour la suite.
 ## Author: Guillaume YVES
-## Version: 0.2.0
+## Version: 0.2.1
 ## SavedVariables: NextStepDB
 ## IconTexture: Interface\Icons\INV_Misc_Map_01
 
 Core\Init.lua
 Core\Constants.lua
 Core\Config.lua
-
-Localization\Strings.lua
 
 Util\Table.lua
 Util\Formatting.lua
@@ -23,6 +22,10 @@ Config\ActivityConfig.lua
 Config\EquipmentConfig.lua
 
 API\WoW.lua
+
+Localization\Strings.lua
+Localization\frFR.lua
+Localization\Init.lua
 
 Model\Activity.lua
 Model\Recommendation.lua

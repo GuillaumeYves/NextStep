@@ -4,15 +4,6 @@ NS.Data = NS.Data or {}
 local GreatVault = {}
 NS.Data.GreatVault = GreatVault
 
-local typeNames = {
-    dungeon = "Great Vault dungeon progress",
-    raid = "Great Vault raid progress",
-    pvp = "Great Vault rated PvP progress",
-    world = "Great Vault world progress",
-    concession = "Great Vault activity progress",
-    unknown = "Great Vault progress",
-}
-
 function GreatVault:Collect()
     local rawActivities, dataReady = NS.API.WoW:GetWeeklyRewardActivities()
     local retired = NS.API.WoW:IsWeeklyChestRetired()
@@ -29,7 +20,7 @@ function GreatVault:Collect()
             normalized[#normalized + 1] = NS.Model.Activity:New({
                 id = string.format("vault_%s_%d", typeKey, index),
                 type = NS.Constants.ACTIVITY_TYPE.GREAT_VAULT,
-                name = typeNames[typeKey] or typeNames.unknown,
+                name = NS.L.VAULT_ACTIVITY_NAMES[typeKey] or NS.L.VAULT_ACTIVITY_NAMES.unknown,
                 available = retired ~= true,
                 completed = threshold > 0 and progress >= threshold,
                 repeatable = true,

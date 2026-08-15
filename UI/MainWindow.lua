@@ -105,7 +105,7 @@ function MainWindow:BuildSummary(state)
     local vault = state.weekly and state.weekly.vault or {}
     local vaultText
     if state.vault and state.vault.dataReady then
-        vaultText = string.format("Vault %d/%d", vault.completedOptions or 0, vault.totalOptions or 0)
+        vaultText = string.format(NS.L.VAULT_SUMMARY, vault.completedOptions or 0, vault.totalOptions or 0)
     else
         vaultText = NS.L.VAULT_UNAVAILABLE
     end
@@ -113,7 +113,7 @@ function MainWindow:BuildSummary(state)
     local currency = state.currencies and state.currencies[1]
     local currencyText = NS.L.NO_CURRENCY
     if currency then
-        currencyText = string.format("%s %s", currency.name or "Currency", NS.Util.Formatting:Number(currency.quantity, "0"))
+        currencyText = string.format("%s %s", currency.name or NS.L.CURRENCY_FALLBACK, NS.Util.Formatting:Number(currency.quantity, "0"))
     end
     return vaultText .. "  |  " .. currencyText
 end

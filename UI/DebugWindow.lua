@@ -61,34 +61,34 @@ function DebugWindow:ShowText(title, text)
 end
 
 function DebugWindow:ShowState(state)
-    self:ShowText("NextStep PlayerState", NS.Util.Debug:Serialize(state, 7))
+    self:ShowText(NS.L.DEBUG_STATE_TITLE, NS.Util.Debug:Serialize(state, 7))
 end
 
 function DebugWindow:ShowRecommendations(trace, recommendations)
-    local lines = { "RULE TRACE", "" }
+    local lines = { NS.L.DEBUG_RULE_TRACE, "" }
     for _, entry in ipairs(trace or {}) do
-        lines[#lines + 1] = string.format("%s | fired=%s | invalid=%d", entry.rule, tostring(entry.fired), entry.invalidResults or 0)
+        lines[#lines + 1] = string.format(NS.L.DEBUG_RULE_FORMAT, entry.rule, tostring(entry.fired), entry.invalidResults or 0)
         if entry.error then
-            lines[#lines + 1] = "  error: " .. entry.error
+            lines[#lines + 1] = string.format(NS.L.DEBUG_ERROR_FORMAT, entry.error)
         end
         for _, id in ipairs(entry.recommendationIDs or {}) do
-            lines[#lines + 1] = "  recommendation: " .. id
+            lines[#lines + 1] = string.format(NS.L.DEBUG_RECOMMENDATION_ID_FORMAT, id)
         end
     end
 
     lines[#lines + 1] = ""
-    lines[#lines + 1] = "RECOMMENDATIONS"
+    lines[#lines + 1] = NS.L.DEBUG_RECOMMENDATIONS
     lines[#lines + 1] = ""
     for _, recommendation in ipairs(recommendations or {}) do
         lines[#lines + 1] = string.format(
-            "%s | rule=%s | priority=%s | importance=%s\n  reason: %s",
+            NS.L.DEBUG_RECOMMENDATION_FORMAT,
             recommendation.id,
-            recommendation.rule or "unknown",
+            recommendation.rule or NS.L.UNKNOWN,
             tostring(recommendation.priority),
-            recommendation.importance or "unknown",
+            NS.L.IMPORTANCE_LABELS[recommendation.importance] or recommendation.importance or NS.L.UNKNOWN,
             recommendation.reason or ""
         )
     end
 
-    self:ShowText("NextStep Recommendations", table.concat(lines, "\n"))
+    self:ShowText(NS.L.DEBUG_RECOMMENDATIONS_TITLE, table.concat(lines, "\n"))
 end
