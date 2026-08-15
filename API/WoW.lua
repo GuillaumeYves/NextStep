@@ -66,6 +66,89 @@ function WoW:GetItemLevels()
     return average, equipped
 end
 
+function WoW:GetExperience()
+    local currentOK, current = SafeCall:Invoke(UnitXP, "player")
+    local maximumOK, maximum = SafeCall:Invoke(UnitXPMax, "player")
+    local restedOK, rested = SafeCall:Invoke(GetXPExhaustion)
+
+    if not currentOK or not maximumOK then
+        return nil, nil, nil, false
+    end
+    return current, maximum, restedOK and rested or nil, true
+end
+
+function WoW:GetQuestLogEntryCount()
+    if not C_QuestLog or not C_QuestLog.GetNumQuestLogEntries then
+        return 0, false
+    end
+    local ok, count = SafeCall:Invoke(C_QuestLog.GetNumQuestLogEntries)
+    return ok and count or 0, ok
+end
+
+function WoW:GetQuestLogInfo(index)
+    if not C_QuestLog or not C_QuestLog.GetInfo then
+        return nil
+    end
+    local ok, info = SafeCall:Invoke(C_QuestLog.GetInfo, index)
+    return ok and info or nil
+end
+
+function WoW:IsQuestReadyForTurnIn(questID)
+    if not C_QuestLog or not C_QuestLog.ReadyForTurnIn then
+        return nil
+    end
+    local ok, ready = SafeCall:Invoke(C_QuestLog.ReadyForTurnIn, questID)
+    if ok then
+        return ready
+    end
+    return nil
+end
+
+function WoW:GetQuestRewardXP(questID)
+    if type(GetQuestLogRewardXP) ~= "function" then
+        return nil
+    end
+    local ok, rewardXP = SafeCall:Invoke(GetQuestLogRewardXP, questID)
+    return ok and rewardXP or nil
+end
+
+function WoW:GetSuperTrackedQuestID()
+    if not C_SuperTrack or not C_SuperTrack.GetSuperTrackedQuestID then
+        return nil
+    end
+    local ok, questID = SafeCall:Invoke(C_SuperTrack.GetSuperTrackedQuestID)
+    return ok and questID or nil
+end
+
+function WoW:GetQuestTitle(questID)
+    if not C_QuestLog or not C_QuestLog.GetTitleForQuestID then
+        return nil
+    end
+    local ok, title = SafeCall:Invoke(C_QuestLog.GetTitleForQuestID, questID)
+    return ok and title or nil
+end
+
+function WoW:GetLevelingDungeonAvailability(level)
+    if not C_LFGInfo or not C_LFGInfo.CanPlayerUseLFD or not C_LFGInfo.GetLevelUpInstances then
+        return false, 0, false
+    end
+
+    local useOK, canUse = SafeCall:Invoke(C_LFGInfo.CanPlayerUseLFD)
+    local listOK, instances = SafeCall:Invoke(C_LFGInfo.GetLevelUpInstances, level, false)
+    if not useOK or not listOK or type(instances) ~= "table" then
+        return false, 0, false
+    end
+    return canUse == true and #instances > 0, #instances, true
+end
+
+function WoW:GetEquippedItemID(slotID)
+    if type(GetInventoryItemID) ~= "function" then
+        return nil, false
+    end
+    local ok, itemID = SafeCall:Invoke(GetInventoryItemID, "player", slotID)
+    return ok and itemID or nil, ok
+end
+
 function WoW:GetCurrencyInfo(currencyID)
     if not C_CurrencyInfo or not C_CurrencyInfo.GetCurrencyInfo then
         return nil, false

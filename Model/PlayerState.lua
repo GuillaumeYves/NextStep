@@ -20,8 +20,26 @@ function PlayerState:New()
             equippedItemLevel = nil,
         },
         currencies = {},
+        experience = {
+            current = nil,
+            maximum = nil,
+            rested = nil,
+            percent = nil,
+            restedPercentOfLevel = nil,
+        },
+        quests = {
+            entries = {},
+            readyForTurnIn = {},
+            trackedQuest = nil,
+            dataReady = false,
+        },
+        leveling = {
+            dungeonFinderAvailable = false,
+            availableDungeonCount = 0,
+        },
         equipment = {
             items = {},
+            emptySlots = {},
             upgradeEligibilityReliable = false,
         },
         vault = {
@@ -34,6 +52,9 @@ function PlayerState:New()
         activities = {},
         capabilities = {
             character = false,
+            experience = false,
+            questLog = false,
+            levelingDungeons = false,
             currencies = false,
             equipment = false,
             greatVault = false,

@@ -15,6 +15,9 @@ function CharacterSummary:Create(parent)
 
     frame.details = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     frame.details:SetPoint("TOPLEFT", frame.name, "BOTTOMLEFT", 0, -8)
+    frame.details:SetPoint("RIGHT", -165, 0)
+    frame.details:SetJustifyH("LEFT")
+    frame.details:SetWordWrap(false)
 
     frame.itemLevel = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     frame.itemLevel:SetPoint("RIGHT", -14, 0)
@@ -23,13 +26,18 @@ function CharacterSummary:Create(parent)
     return frame
 end
 
-function CharacterSummary:Update(frame, character)
+function CharacterSummary:Update(frame, character, experience)
     character = character or {}
+    experience = experience or {}
     frame.name:SetText(character.name or "Character unavailable")
 
     local details = {}
     if character.level then
-        details[#details + 1] = "Level " .. tostring(character.level)
+        local levelText = "Level " .. tostring(character.level)
+        if type(experience.percent) == "number" and character.maxLevel and character.level < character.maxLevel then
+            levelText = levelText .. string.format(" (%.1f%% XP)", experience.percent)
+        end
+        details[#details + 1] = levelText
     end
     if character.className then
         details[#details + 1] = character.className

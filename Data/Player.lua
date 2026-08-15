@@ -7,6 +7,9 @@ NS.Data.Player = Player
 function Player:Collect()
     local state = NS.Model.PlayerState:New()
     local character, characterReady = NS.Data.Character:Collect()
+    local experience, experienceReady = NS.Data.Experience:Collect()
+    local quests, questsReady = NS.Data.Quests:Collect()
+    local leveling, levelingReady = NS.Data.Leveling:Collect(character)
     local equipment, equipmentReady = NS.Data.Equipment:Collect()
     local currencies, currenciesReady = NS.Data.Currency:Collect()
     local vault, vaultReady = NS.Data.GreatVault:Collect()
@@ -16,12 +19,18 @@ function Player:Collect()
 
     state.generatedAt = NS.API.WoW:GetTimestamp()
     state.character = character
+    state.experience = experience
+    state.quests = quests
+    state.leveling = leveling
     state.currencies = currencies
     state.equipment = equipment
     state.vault = vault
     state.weekly = NS.Data.Weekly:Collect(vault)
-    state.activities = NS.Data.Activities:Collect(vault)
+    state.activities = NS.Data.Activities:Collect(vault, quests, leveling)
     state.capabilities.character = characterReady
+    state.capabilities.experience = experienceReady
+    state.capabilities.questLog = questsReady
+    state.capabilities.levelingDungeons = levelingReady
     state.capabilities.currencies = currenciesReady
     state.capabilities.equipment = equipmentReady
     state.capabilities.greatVault = vaultReady

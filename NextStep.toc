@@ -2,7 +2,7 @@
 ## Title: NextStep
 ## Notes: Know what matters for you next.
 ## Author: Guillaume YVES
-## Version: 0.1.0
+## Version: 0.2.0
 ## SavedVariables: NextStepDB
 ## IconTexture: Interface\Icons\INV_Misc_Map_01
 
@@ -20,6 +20,7 @@ Util\Debug.lua
 Config\SeasonConfig.lua
 Config\CurrencyConfig.lua
 Config\ActivityConfig.lua
+Config\EquipmentConfig.lua
 
 API\WoW.lua
 
@@ -28,6 +29,9 @@ Model\Recommendation.lua
 Model\PlayerState.lua
 
 Data\Character.lua
+Data\Experience.lua
+Data\Quests.lua
+Data\Leveling.lua
 Data\Currency.lua
 Data\Equipment.lua
 Data\GreatVault.lua

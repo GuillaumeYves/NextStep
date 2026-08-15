@@ -44,8 +44,9 @@ Constants.ACTIVITY_TYPE = {
     GREAT_VAULT = "great_vault",
     DUNGEON = "dungeon",
     RAID = "raid",
-    WEEKLY = "weekly",
-    GEAR_UPGRADE = "gear_upgrade",
+        WEEKLY = "weekly",
+        QUEST = "quest",
+        GEAR_UPGRADE = "gear_upgrade",
     CURRENCY = "currency",
     WORLD_CONTENT = "world_content",
 }
