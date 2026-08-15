@@ -36,3 +36,18 @@ function Formatting:CharacterKey(character)
     local realm = character and character.realm or "Unknown"
     return name .. "-" .. realm
 end
+
+function Formatting:List(values, maximum)
+    maximum = maximum or #values
+    local shown = {}
+    for index = 1, math.min(#values, maximum) do
+        shown[#shown + 1] = values[index]
+    end
+
+    local result = table.concat(shown, ", ")
+    local remaining = #values - #shown
+    if remaining > 0 then
+        result = result .. string.format(", and %d more", remaining)
+    end
+    return result
+end

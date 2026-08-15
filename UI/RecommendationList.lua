@@ -4,7 +4,7 @@ NS.UI = NS.UI or {}
 local RecommendationList = {}
 NS.UI.RecommendationList = RecommendationList
 
-local CARD_HEIGHT = 82
+local CARD_HEIGHT = 100
 local CARD_GAP = 8
 
 function RecommendationList:Create(parent)

@@ -121,7 +121,7 @@ end
 function MainWindow:Update(state, plan)
     local frame = self:Create()
     NS.UI.Header:Update(frame.header, state.character)
-    NS.UI.CharacterSummary:Update(frame.characterSummary, state.character)
+    NS.UI.CharacterSummary:Update(frame.characterSummary, state.character, state.experience)
     NS.UI.RecommendationList:Update(frame.recommendationList, plan.recommendations or {})
     NS.UI.EmptyState:Update(frame.emptyState, plan.fallbackMessage)
     frame.emptyState:SetShown(plan.isFallback)

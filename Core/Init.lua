@@ -1,7 +1,7 @@
 local addonName, NS = ...
 
 NS.addonName = addonName
-NS.version = "0.1.0"
+NS.version = "0.2.0"
 NS.modules = NS.modules or {}
 
 function NS:RegisterModule(name, module)
@@ -39,6 +39,24 @@ function NS:Refresh(reason)
     end
 
     local state = self.Data.Player:Collect()
+    self:BuildPlanFromState(state, reason)
+    self.Data.Player:RecordCharacterSeen(state)
+end
+
+function NS:RefreshExperience(reason)
+    if not self.initialized or not self.playerState then
+        self:Refresh(reason)
+        return
+    end
+
+    local experience, ready = self.Data.Experience:Collect()
+    self.playerState.experience = experience
+    self.playerState.capabilities.experience = ready
+    self.playerState.generatedAt = self.API.WoW:GetTimestamp()
+    self:BuildPlanFromState(self.playerState, reason)
+end
+
+function NS:BuildPlanFromState(state, reason)
     local recommendations, trace = self.Recommendation.Engine:Build(state)
     local plan = self.Planner:Build(state, recommendations)
 
@@ -47,7 +65,6 @@ function NS:Refresh(reason)
     self.ruleTrace = trace
     self.plan = plan
 
-    self.Data.Player:RecordCharacterSeen(state)
     self.UI.MainWindow:Update(state, plan)
     self.lastRefreshReason = reason
 end

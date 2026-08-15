@@ -14,7 +14,7 @@ local colors = {
 
 function RecommendationCard:Create(parent)
     local card = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    card:SetHeight(82)
+    card:SetHeight(100)
     card:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8X8",
         edgeFile = "Interface\\Buttons\\WHITE8X8",
@@ -35,11 +35,12 @@ function RecommendationCard:Create(parent)
     card.description = card:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     card.description:SetPoint("TOPLEFT", 14, -47)
     card.description:SetPoint("RIGHT", -14, 0)
+    card.description:SetHeight(30)
     card.description:SetJustifyH("LEFT")
-    card.description:SetWordWrap(false)
+    card.description:SetWordWrap(true)
 
     card.reason = card:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    card.reason:SetPoint("TOPLEFT", 14, -64)
+    card.reason:SetPoint("TOPLEFT", 14, -82)
     card.reason:SetPoint("RIGHT", -14, 0)
     card.reason:SetJustifyH("LEFT")
     card.reason:SetWordWrap(false)
