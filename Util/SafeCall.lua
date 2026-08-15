@@ -12,7 +12,7 @@ function SafeCall:Invoke(callback, ...)
     local results = { pcall(callback, ...) }
     if not results[1] then
         if NS.db and NS.db.settings.debugMode then
-            NS:Print("API call failed: " .. tostring(results[2]))
+            NS:Print(string.format(NS.L.API_CALL_FAILED, tostring(results[2])))
         end
         return false
     end

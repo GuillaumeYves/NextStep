@@ -2,6 +2,19 @@
 
 All notable changes to NextStep are documented here.
 
+## 0.2.1 - 2026-08-16
+
+### Added
+
+- Automatic locale selection from the WoW client
+- Complete English fallback for missing or unsupported locale strings
+- French translations for the main window, recommendations, settings, chat feedback, and debug headings
+
+### Changed
+
+- User-facing importance labels, item summaries, Vault activity names, and plural nouns now come from locale tables
+- Localization now loads after the API wrapper so locale detection remains isolated from recommendation and UI logic
+
 ## 0.2.0 - 2026-08-16
 
 ### Added

@@ -19,6 +19,7 @@ The first production milestone provides:
 - A configurable currency tracking pipeline
 - A friendly fallback when no important action can be detected
 - Saved settings and window position
+- Automatic locale selection from the WoW client
 - Structured state and rule diagnostics
 
 Every recommendation includes a title, a short instruction, an importance label, and a reason. NextStep does not invent activity durations, item value, best-in-slot status, or unavailable rewards.
@@ -40,6 +41,10 @@ The current manifest targets Retail interface `120100`, corresponding to the rev
 - `/ns debug state` opens the normalized PlayerState inspector.
 - `/ns debug recommendations` opens rule and recommendation diagnostics.
 - `/ns reset` restores default settings and window position.
+
+## Localization
+
+NextStep reads the WoW client locale automatically. English and French are currently included. Unsupported client locales use the complete English table, and every translated locale falls back to English for missing keys. No addon setting is required.
 
 ## Architecture
 
@@ -71,7 +76,7 @@ Document the source and season beside each added ID.
 
 ## Development status
 
-Version 0.2.0 expands the MVP with evidence-based leveling and gearing signals. The original 0.1.0 build was confirmed to load successfully by the project owner. The 0.2.0 changes still require manual in-game validation. Equipment upgrade eligibility, exact drop routing, and verified seasonal currency defaults are not implemented.
+Version 0.2.1 adds automatic client-locale selection and a French translation. The original 0.1.0 build was confirmed to load successfully by the project owner. Changes after 0.1.0 still require manual in-game validation. Equipment upgrade eligibility, exact drop routing, and verified seasonal currency defaults are not implemented.
 
 ## Known limitations
 
@@ -83,7 +88,9 @@ Version 0.2.0 expands the MVP with evidence-based leveling and gearing signals. 
 - Currency tracking has no default IDs until active season values are verified.
 - Item levels can be temporarily unavailable and are shown as unavailable instead of guessed.
 - Empty slots are detectable, but equipment upgrade eligibility and exact gear sources are not implemented.
-- The new 0.2.0 behavior has not been tested inside a live WoW client in this repository session.
+- Changes after 0.1.0 have not been tested inside a live WoW client in this repository session.
+- Localized layouts and French wording still require in-game review.
+- Client locales other than English and French currently fall back to English.
 
 ## Addon policy philosophy
 
@@ -107,6 +114,7 @@ Reviewed against the extracted live 12.1.0 Blizzard UI source and generated API 
 
 | API | Used in | Verification | Caveats | Event dependencies |
 | --- | --- | --- | --- | --- |
+| `GetLocale` | `API/WoW.lua`, `Localization/Init.lua` | Confident, generated Locale docs | Selected once while addon files load; unsupported locales fall back to English | None |
 | `UnitName`, `UnitLevel`, `UnitClass`, `GetRealmName` | `API/WoW.lua` | Confident | Values may not be ready before login | `PLAYER_LOGIN`, `PLAYER_ENTERING_WORLD`, `UNIT_LEVEL` |
 | `GetMaxLevelForPlayerExpansion` | `API/WoW.lua` | Confident, generated Expansion docs | Returns the cap available to the player's account | `PLAYER_LOGIN` |
 | `C_SpecializationInfo.GetSpecialization` | `API/WoW.lua` | Confident, generated SpecializationInfo docs | Index can be unavailable during initialization | `PLAYER_SPECIALIZATION_CHANGED`, `PLAYER_LOGIN` |
@@ -128,6 +136,7 @@ Reviewed against the extracted live 12.1.0 Blizzard UI source and generated API 
 
 Primary review sources:
 
+- [Blizzard generated Locale API documentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/LocaleDocumentation.lua)
 - [Blizzard generated Weekly Rewards API documentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/WeeklyRewardsDocumentation.lua)
 - [Blizzard generated Currency Info API documentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/CurrencyInfoDocumentation.lua)
 - [Blizzard generated Specialization API documentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/SpecializationInfoDocumentation.lua)

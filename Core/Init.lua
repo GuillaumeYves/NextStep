@@ -1,7 +1,7 @@
 local addonName, NS = ...
 
 NS.addonName = addonName
-NS.version = "0.2.0"
+NS.version = "0.2.1"
 NS.modules = NS.modules or {}
 
 function NS:RegisterModule(name, module)
@@ -88,11 +88,11 @@ function NS:HandleSlashCommand(input)
         self.UI.MainWindow:Toggle()
     elseif command == "debug" then
         self.db.settings.debugMode = not self.db.settings.debugMode
-        self:Print("Debug mode " .. (self.db.settings.debugMode and "enabled." or "disabled."))
+        self:Print(self.db.settings.debugMode and self.L.DEBUG_MODE_ENABLED or self.L.DEBUG_MODE_DISABLED)
     elseif command == "debug state" then
         if self.API.WoW:IsInCombat() then
             self:RequestRefresh("debug_state")
-            self:Print("Refresh deferred until combat ends. Showing cached state.")
+            self:Print(self.L.DEBUG_STATE_DEFERRED)
         else
             self:Refresh("debug_state")
         end
@@ -100,7 +100,7 @@ function NS:HandleSlashCommand(input)
     elseif command == "debug recommendations" then
         if self.API.WoW:IsInCombat() then
             self:RequestRefresh("debug_recommendations")
-            self:Print("Refresh deferred until combat ends. Showing cached recommendations.")
+            self:Print(self.L.DEBUG_RECOMMENDATIONS_DEFERRED)
         else
             self:Refresh("debug_recommendations")
         end
@@ -110,8 +110,8 @@ function NS:HandleSlashCommand(input)
         self.UI.MainWindow:ResetPosition()
         self.UI.Settings:Update()
         self:RequestRefresh("settings_reset", 0)
-        self:Print("Settings reset.")
+        self:Print(self.L.SETTINGS_RESET)
     else
-        self:Print("Commands: /nextstep, /ns, /ns debug, /ns debug state, /ns debug recommendations, /ns reset")
+        self:Print(self.L.COMMANDS_HELP)
     end
 end

@@ -11,6 +11,14 @@ local function isLeveling(state)
         and character.level < character.maxLevel
 end
 
+local function localizedNoun(key, count)
+    local forms = NS.L.NOUNS[key]
+    if not forms then
+        return key
+    end
+    return count == 1 and forms.one or forms.other
+end
+
 function Rules:Leveling(state)
     if not isLeveling(state) then
         return nil
@@ -70,7 +78,7 @@ function Rules:QuestTurnIns(state)
         description = string.format(
             NS.L.QUEST_TURN_IN_DESCRIPTION,
             count,
-            NS.Util.Formatting:Plural(count, "quest"),
+            localizedNoun("quest", count),
             NS.Util.Formatting:Number(totalXP, "0")
         ),
         reason = NS.Recommendation.Reasons.QUEST_TURN_IN,
@@ -130,7 +138,7 @@ function Rules:LevelingDungeons(state)
         description = string.format(
             NS.L.LEVELING_DUNGEON_DESCRIPTION,
             count,
-            NS.Util.Formatting:Plural(count, "dungeon")
+            localizedNoun("dungeon", count)
         ),
         reason = NS.Recommendation.Reasons.LEVELING_DUNGEON,
         status = NS.Constants.STATUS.AVAILABLE,
@@ -175,7 +183,7 @@ function Rules:EmptyEquipment(state)
             or NS.Recommendation.Scoring.PRIORITY.EMPTY_EQUIPMENT,
         importance = mainHandMissing and NS.Constants.IMPORTANCE.CRITICAL or NS.Constants.IMPORTANCE.HIGH,
         title = NS.L.EMPTY_GEAR_TITLE,
-        description = string.format(format, NS.Util.Formatting:List(names, 3)),
+        description = string.format(format, NS.Util.Formatting:List(names, 3, NS.L.LIST_AND_MORE)),
         reason = NS.Recommendation.Reasons.EMPTY_GEAR,
         status = NS.Constants.STATUS.AVAILABLE,
         source = "equipment",
@@ -185,9 +193,9 @@ end
 
 local function vaultProgressSentence(key, missing)
     if key == "dungeon" then
-        return string.format(NS.L.VAULT_ROUTE_DUNGEON, missing, NS.Util.Formatting:Plural(missing, "dungeon"))
+        return string.format(NS.L.VAULT_ROUTE_DUNGEON, missing, localizedNoun("dungeon", missing))
     elseif key == "raid" then
-        return string.format(NS.L.VAULT_ROUTE_RAID, missing, NS.Util.Formatting:Plural(missing, "boss", "bosses"))
+        return string.format(NS.L.VAULT_ROUTE_RAID, missing, localizedNoun("boss", missing))
     elseif key == "pvp" then
         return string.format(NS.L.VAULT_ROUTE_PROGRESS, missing, NS.L.VAULT_PROGRESS_SOURCES.pvp)
     elseif key == "world" then
@@ -198,11 +206,11 @@ end
 
 local function vaultFollowingUnit(key, count)
     if key == "dungeon" then
-        return NS.Util.Formatting:Plural(count, "dungeon")
+        return localizedNoun("dungeon", count)
     elseif key == "raid" then
-        return NS.Util.Formatting:Plural(count, "raid boss", "raid bosses")
+        return localizedNoun("raidBoss", count)
     end
-    return "Vault progress"
+    return localizedNoun("vaultProgress", count)
 end
 
 local function buildVaultRoute(key, activity, following)

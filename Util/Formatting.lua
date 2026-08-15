@@ -11,9 +11,9 @@ function Formatting:Number(value, fallback)
     return BreakUpLargeNumbers(math.floor(value + 0.5))
 end
 
-function Formatting:ItemLevel(value)
+function Formatting:ItemLevel(value, fallback)
     if type(value) ~= "number" or value <= 0 then
-        return "Unavailable"
+        return fallback or "Unavailable"
     end
     return string.format("%.1f", value)
 end
@@ -37,7 +37,7 @@ function Formatting:CharacterKey(character)
     return name .. "-" .. realm
 end
 
-function Formatting:List(values, maximum)
+function Formatting:List(values, maximum, remainderFormat)
     maximum = maximum or #values
     local shown = {}
     for index = 1, math.min(#values, maximum) do
@@ -47,7 +47,7 @@ function Formatting:List(values, maximum)
     local result = table.concat(shown, ", ")
     local remaining = #values - #shown
     if remaining > 0 then
-        result = result .. string.format(", and %d more", remaining)
+        result = result .. string.format(remainderFormat or ", and %d more", remaining)
     end
     return result
 end

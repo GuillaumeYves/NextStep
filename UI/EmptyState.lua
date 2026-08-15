@@ -11,7 +11,7 @@ function EmptyState:Create(parent)
 
     frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     frame.title:SetPoint("CENTER", 0, 18)
-    frame.title:SetText("All clear for now")
+    frame.title:SetText(NS.L.ALL_CLEAR)
 
     frame.message = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     frame.message:SetPoint("TOPLEFT", 42, -105)
