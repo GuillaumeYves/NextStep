@@ -1,0 +1,54 @@
+## Interface: 120100
+## Title: NextStep
+## Notes: Know what matters for you next.
+## Author: Guillaume YVES
+## Version: 0.1.0
+## SavedVariables: NextStepDB
+## IconTexture: Interface\Icons\INV_Misc_Map_01
+
+Core\Init.lua
+Core\Constants.lua
+Core\Config.lua
+
+Localization\Strings.lua
+
+Util\Table.lua
+Util\Formatting.lua
+Util\SafeCall.lua
+Util\Debug.lua
+
+Config\SeasonConfig.lua
+Config\CurrencyConfig.lua
+Config\ActivityConfig.lua
+
+API\WoW.lua
+
+Model\Activity.lua
+Model\Recommendation.lua
+Model\PlayerState.lua
+
+Data\Character.lua
+Data\Currency.lua
+Data\Equipment.lua
+Data\GreatVault.lua
+Data\Weekly.lua
+Data\Activities.lua
+Data\Player.lua
+
+Recommendation\Reasons.lua
+Recommendation\Scoring.lua
+Recommendation\Rules.lua
+Recommendation\Engine.lua
+
+Planner\Planner.lua
+
+UI\Header.lua
+UI\RecommendationCard.lua
+UI\RecommendationList.lua
+UI\CharacterSummary.lua
+UI\EmptyState.lua
+UI\Settings.lua
+UI\DebugWindow.lua
+UI\MainWindow.lua
+
+Core\Events.lua
