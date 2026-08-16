@@ -108,6 +108,18 @@ This boundary follows Blizzard's published goal that addons should not automate 
 - Add speculative features to `TODO.md` instead of silently implementing them.
 - Include exact manual in-game test steps with every implementation change.
 
+## Continuous integration
+
+The GitHub Actions workflow validates Lua 5.1 syntax, every manifest path, duplicate manifest entries, locale parity, locale format tokens, automatic English fallback, forbidden dash characters, and trailing whitespace.
+
+Run the repository validators locally from the addon root:
+
+```bash
+find . -type f -name '*.lua' -not -path './.git/*' -print0 | sort -z | xargs -0 -r -n1 luac5.1 -p
+bash tools/validate-toc.sh NextStep.toc
+lua5.1 tools/validate-locales.lua NextStep.toc
+```
+
 ## API review
 
 Reviewed against the extracted live 12.1.0 Blizzard UI source and generated API documentation on 2026-08-16.

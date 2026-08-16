@@ -9,6 +9,8 @@ All notable changes to NextStep are documented here.
 - Automatic locale selection from the WoW client
 - Complete English fallback for missing or unsupported locale strings
 - French translations for the main window, recommendations, settings, chat feedback, and debug headings
+- GitHub Actions validation for Lua syntax, manifest integrity, localization, and text policy
+- Local manifest and localization validation scripts
 
 ### Changed
 
