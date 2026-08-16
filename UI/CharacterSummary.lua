@@ -7,8 +7,7 @@ NS.UI.CharacterSummary = CharacterSummary
 function CharacterSummary:Create(parent)
     local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
     frame:SetHeight(68)
-    frame:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
-    frame:SetBackdropColor(0.075, 0.09, 0.115, 0.9)
+    NS.UI.Theme:ApplyInset(frame)
 
     frame.name = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     frame.name:SetPoint("TOPLEFT", 14, -12)

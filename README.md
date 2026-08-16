@@ -20,6 +20,9 @@ The first production milestone provides:
 - A friendly fallback when no important action can be detected
 - Saved settings and window position
 - Automatic locale selection from the WoW client
+- Per-character goals for experience, gear, mounts, and battle pets
+- A first-run character setup tutorial
+- A movable compact window showing only the highest-priority next step
 - Structured state and rule diagnostics
 
 Every recommendation includes a title, a short instruction, an importance label, and a reason. NextStep does not invent activity durations, item value, best-in-slot status, or unavailable rewards.
@@ -32,11 +35,14 @@ Every recommendation includes a title, a short instruction, an importance label,
 4. Enable NextStep in the AddOns list.
 5. Log in and run `/nextstep`.
 
+On the first login for each character, NextStep asks what that character should prioritize. After setup, the compact next step window appears automatically unless it was disabled.
+
 The current manifest targets Retail interface `120100`, corresponding to the reviewed 12.1.0 live UI source.
 
 ## Slash commands
 
 - `/nextstep` or `/ns` toggles the main window.
+- `/ns tutorial` reopens the current character's goal setup.
 - `/ns debug` toggles debug logging.
 - `/ns debug state` opens the normalized PlayerState inspector.
 - `/ns debug recommendations` opens rule and recommendation diagnostics.
@@ -60,6 +66,14 @@ Blizzard APIs
 
 The recommendation engine and planner never call Blizzard APIs. Volatile season and currency values belong under `Config/`.
 
+Each recommendation declares the character goals it supports. The planner filters recommendations against the current character's SavedVariables profile. Critical earned rewards remain visible even when they are outside the selected goals.
+
+## Verified patch content
+
+NextStep combines dynamic character state from Blizzard APIs with curated patch content. Route and guide data must be reviewed for the current live patch before it is added. Every curated entry should identify its patch, source, requirements, steps, and known uncertainty.
+
+Claims such as fastest route, best farm, or best upgrade path require direct and current evidence. When that evidence is unavailable, NextStep uses precise neutral wording or omits the recommendation.
+
 ## Currency configuration
 
 Tracked currency IDs live only in `Config/CurrencyConfig.lua`. The initial list is intentionally empty because no active seasonal currency ID was accepted without a verified source. Add a verified entry in this form:
@@ -76,7 +90,7 @@ Document the source and season beside each added ID.
 
 ## Development status
 
-Version 0.2.1 adds automatic client-locale selection and a French translation. The original 0.1.0 build was confirmed to load successfully by the project owner. Changes after 0.1.0 still require manual in-game validation. Equipment upgrade eligibility, exact drop routing, and verified seasonal currency defaults are not implemented.
+Version 0.3.0 adds per-character onboarding, goal-aware planning, a compact next step window, and a more native WoW visual style. The original 0.1.0 build was confirmed to load successfully by the project owner. Changes after 0.1.0 still require manual in-game validation. Equipment upgrade eligibility, exact drop routing, and verified seasonal currency defaults are not implemented.
 
 ## Known limitations
 
@@ -91,6 +105,8 @@ Version 0.2.1 adds automatic client-locale selection and a French translation. T
 - Changes after 0.1.0 have not been tested inside a live WoW client in this repository session.
 - Localized layouts and French wording still require in-game review.
 - Client locales other than English and French currently fall back to English.
+- Mount and battle pet goals are stored, but they do not generate recommendations until verified patch route data is added.
+- Goal selection filters known recommendations. It does not make unsupported activities faster or estimate completion time.
 
 ## Addon policy philosophy
 
@@ -110,7 +126,7 @@ This boundary follows Blizzard's published goal that addons should not automate 
 
 ## Continuous integration
 
-The GitHub Actions workflow validates Lua 5.1 syntax, every manifest path, duplicate manifest entries, locale parity, locale format tokens, automatic English fallback, forbidden dash characters, and trailing whitespace.
+The GitHub Actions workflow validates Lua 5.1 syntax, every manifest path, duplicate manifest entries, locale parity, locale format tokens, automatic English fallback, character preference behavior, SavedVariables migration, forbidden dash characters, and trailing whitespace.
 
 Run the repository validators locally from the addon root:
 
@@ -118,6 +134,7 @@ Run the repository validators locally from the addon root:
 find . -type f -name '*.lua' -not -path './.git/*' -print0 | sort -z | xargs -0 -r -n1 luac5.1 -p
 bash tools/validate-toc.sh NextStep.toc
 lua5.1 tools/validate-locales.lua NextStep.toc
+lua5.1 tests/preferences.lua
 ```
 
 ## API review

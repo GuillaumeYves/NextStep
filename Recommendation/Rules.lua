@@ -48,6 +48,7 @@ function Rules:Leveling(state)
         reason = reason,
         status = NS.Constants.STATUS.AVAILABLE,
         source = source,
+        goals = { NS.Constants.GOAL.EXPERIENCE },
     })
 end
 
@@ -84,6 +85,7 @@ function Rules:QuestTurnIns(state)
         reason = NS.Recommendation.Reasons.QUEST_TURN_IN,
         status = NS.Constants.STATUS.AVAILABLE,
         source = "quest_log",
+        goals = { NS.Constants.GOAL.EXPERIENCE },
         metadata = { questCount = count, rewardXP = totalXP },
     })
 end
@@ -114,6 +116,7 @@ function Rules:RestedExperience(state)
         reason = NS.Recommendation.Reasons.RESTED_XP,
         status = NS.Constants.STATUS.AVAILABLE,
         source = "experience",
+        goals = { NS.Constants.GOAL.EXPERIENCE },
     })
 end
 
@@ -143,6 +146,7 @@ function Rules:LevelingDungeons(state)
         reason = NS.Recommendation.Reasons.LEVELING_DUNGEON,
         status = NS.Constants.STATUS.AVAILABLE,
         source = "dungeon_finder",
+        goals = { NS.Constants.GOAL.EXPERIENCE, NS.Constants.GOAL.GEAR },
         metadata = { availableDungeonCount = count },
     })
 end
@@ -187,6 +191,7 @@ function Rules:EmptyEquipment(state)
         reason = NS.Recommendation.Reasons.EMPTY_GEAR,
         status = NS.Constants.STATUS.AVAILABLE,
         source = "equipment",
+        goals = { NS.Constants.GOAL.GEAR },
         metadata = { emptySlotCount = #emptySlots, mainHandMissing = mainHandMissing },
     })
 end
@@ -253,6 +258,7 @@ function Rules:GreatVault(state)
             reason = NS.Recommendation.Reasons.VAULT_CLAIM,
             status = NS.Constants.STATUS.AVAILABLE,
             source = "great_vault",
+            goals = { NS.Constants.GOAL.GEAR },
         })
     end
 
@@ -292,6 +298,7 @@ function Rules:GreatVault(state)
                 reason = NS.Recommendation.Reasons.VAULT_UNLOCK,
                 status = NS.Constants.STATUS.AVAILABLE,
                 source = "great_vault",
+                goals = { NS.Constants.GOAL.GEAR },
                 metadata = {
                     activityID = activity.id,
                     vaultTypeKey = key,

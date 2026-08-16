@@ -6,8 +6,7 @@ NS.UI.EmptyState = EmptyState
 
 function EmptyState:Create(parent)
     local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    frame:SetBackdrop({ bgFile = "Interface\\Buttons\\WHITE8X8" })
-    frame:SetBackdropColor(0.055, 0.065, 0.08, 0.9)
+    NS.UI.Theme:ApplyInset(frame)
 
     frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     frame.title:SetPoint("CENTER", 0, 18)
