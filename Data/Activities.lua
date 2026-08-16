@@ -24,17 +24,23 @@ function Activities:Collect(vault, quests, leveling)
     end
 
     if leveling and leveling.dungeonFinderAvailable then
-        activities[#activities + 1] = NS.Model.Activity:New({
-            id = "leveling_dungeons",
-            type = NS.Constants.ACTIVITY_TYPE.DUNGEON,
-            name = NS.L.LEVELING_DUNGEON_TITLE,
-            available = true,
-            completed = false,
-            repeatable = true,
-            progressionTags = { "leveling", "dungeon", "gear" },
-            source = "dungeon_finder",
-            metadata = { availableDungeonCount = leveling.availableDungeonCount },
-        })
+        for _, dungeon in ipairs(leveling.availableDungeons or {}) do
+            activities[#activities + 1] = NS.Model.Activity:New({
+                id = "leveling_dungeon_" .. tostring(dungeon.dungeonID),
+                type = NS.Constants.ACTIVITY_TYPE.DUNGEON,
+                name = dungeon.name or NS.L.LEVELING_DUNGEON_TITLE,
+                available = true,
+                completed = false,
+                repeatable = true,
+                progressionTags = { "leveling", "dungeon", "gear" },
+                source = "dungeon_finder",
+                metadata = {
+                    dungeonID = dungeon.dungeonID,
+                    iconID = dungeon.iconID,
+                    link = dungeon.link,
+                },
+            })
+        end
     end
     return activities
 end

@@ -2,7 +2,14 @@ local NS = {
     modules = {},
     L = {
         FALLBACK = "fallback",
-        FALLBACK_SELECTED_GOALS = "selected goals fallback",
+        FALLBACK_STALE_ROUTE_PACK = "stale",
+        GOAL_LABELS = {
+            experience = "Experience",
+            gear = "Gear",
+            mounts = "Mounts",
+            pets = "Pets",
+            achievements = "Achievements",
+        },
     },
 }
 
@@ -28,65 +35,46 @@ _G.NextStepDB = {
     schemaVersion = 1,
     settings = {},
     characters = {
-        ["Veteran-Realm"] = { lastSeen = 123 },
+        ["Veteran-Realm"] = {
+            lastSeen = 123,
+            goals = { experience = false, gear = false, mounts = true },
+        },
     },
 }
 
 NS.Config:InitializeDatabase()
-assert(NS.db.schemaVersion == 2, "Database schema did not migrate.")
+assert(NS.db.schemaVersion == 3, "Database schema did not migrate.")
+assert(type(NS.db.settings.settingsWindow) == "table", "Settings window defaults did not migrate.")
 
-local maxLevelCharacter = {
-    name = "Veteran",
-    realm = "Realm",
-    level = 90,
-    maxLevel = 90,
-}
-local profile = NS.Config:GetCharacterProfile(maxLevelCharacter, true)
+local character = { name = "Veteran", realm = "Realm", level = 90, maxLevel = 90 }
+local profile = NS.Config:GetCharacterProfile(character, true)
 assert(profile.lastSeen == 123, "Existing character state was not preserved.")
-assert(profile.goals.experience == false, "Max-level default should not prioritize experience.")
-assert(profile.goals.gear == true, "Gear should remain a default goal.")
-
-profile.goals.gear = false
-profile.goals.mounts = true
+assert(type(profile.widget) == "table", "The compact window settings were not added.")
 
 local recommendations = {
     {
-        id = "experience",
-        priority = 90,
-        importance = NS.Constants.IMPORTANCE.HIGH,
-        status = NS.Constants.STATUS.AVAILABLE,
-        goals = { NS.Constants.GOAL.EXPERIENCE },
+        id = "experience", importance = NS.Constants.IMPORTANCE.HIGH,
+        status = NS.Constants.STATUS.AVAILABLE, goals = { NS.Constants.GOAL.EXPERIENCE },
     },
     {
-        id = "gear",
-        priority = 80,
-        importance = NS.Constants.IMPORTANCE.HIGH,
-        status = NS.Constants.STATUS.AVAILABLE,
-        goals = { NS.Constants.GOAL.GEAR },
-    },
-    {
-        id = "critical_reward",
-        priority = 100,
-        importance = NS.Constants.IMPORTANCE.CRITICAL,
-        status = NS.Constants.STATUS.AVAILABLE,
-        goals = { NS.Constants.GOAL.GEAR },
+        id = "gear", importance = NS.Constants.IMPORTANCE.HIGH,
+        status = NS.Constants.STATUS.AVAILABLE, goals = { NS.Constants.GOAL.GEAR },
     },
 }
 
-local plan = NS.Planner:Build({ character = maxLevelCharacter }, recommendations)
-assert(#plan.recommendations == 1, "Goal filtering returned an unexpected recommendation count.")
-assert(plan.recommendations[1].id == "critical_reward", "Critical recommendations must remain visible.")
+local plan = NS.Planner:Build({ character = character }, recommendations)
+assert(#plan.recommendations == 2, "Legacy goal choices must not filter the plan.")
+assert(#plan.categories == 4, "The leveling category should be hidden at maximum level.")
+assert(plan.categories[1].id == "gear" and #plan.categories[1].tasks == 1,
+    "Gear tasks were not grouped first for a max-level character.")
+assert(#plan.categories[2].tasks == 0 and #plan.categories[3].tasks == 0
+    and #plan.categories[4].tasks == 0,
+    "Empty supported collection categories should remain selectable.")
 
-local filteredPlan = NS.Planner:Build({ character = maxLevelCharacter }, { recommendations[1] })
-assert(filteredPlan.isFallback == true, "An unmatched goal should produce a fallback plan.")
-assert(filteredPlan.fallbackMessage == NS.L.FALLBACK_SELECTED_GOALS, "Goal fallback message was not selected.")
+local levelingPlan = NS.Planner:Build({
+    character = { name = "Rookie", realm = "Realm", level = 20, maxLevel = 90 },
+}, recommendations)
+assert(#levelingPlan.categories == 5 and levelingPlan.categories[1].id == "experience",
+    "The leveling category should remain available below maximum level.")
 
-local levelingProfile = NS.Config:GetCharacterProfile({
-    name = "Rookie",
-    realm = "Realm",
-    level = 20,
-    maxLevel = 90,
-}, true)
-assert(levelingProfile.goals.experience == true, "Leveling characters should prioritize experience by default.")
-
-print("Preference and migration tests passed.")
+print("Profile migration and category tests passed.")

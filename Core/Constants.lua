@@ -2,7 +2,7 @@ local _, NS = ...
 
 local Constants = NS:RegisterModule("Constants", {})
 
-Constants.SCHEMA_VERSION = 2
+Constants.SCHEMA_VERSION = 3
 Constants.CHARACTER_SCHEMA_VERSION = 1
 Constants.DEFAULT_MAX_RECOMMENDATIONS = 5
 Constants.MIN_RECOMMENDATIONS = 1
@@ -14,6 +14,7 @@ Constants.GOAL = {
     GEAR = "gear",
     MOUNTS = "mounts",
     PETS = "pets",
+    ACHIEVEMENTS = "achievements",
 }
 
 Constants.GOAL_ORDER = {
@@ -21,6 +22,7 @@ Constants.GOAL_ORDER = {
     "gear",
     "mounts",
     "pets",
+    "achievements",
 }
 
 Constants.IMPORTANCE = {

@@ -6,7 +6,8 @@ NS.UI.RecommendationCard = RecommendationCard
 
 function RecommendationCard:Create(parent)
     local card = CreateFrame("Frame", nil, parent, "BackdropTemplate")
-    card:SetHeight(100)
+    card:SetHeight(112)
+    card:EnableMouse(true)
     NS.UI.Theme:ApplyCard(card)
 
     card.accent = card:CreateTexture(nil, "ARTWORK")
@@ -26,20 +27,31 @@ function RecommendationCard:Create(parent)
     card.description = card:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     card.description:SetPoint("TOPLEFT", 14, -47)
     card.description:SetPoint("RIGHT", -14, 0)
-    card.description:SetHeight(30)
+    card.description:SetHeight(34)
     card.description:SetJustifyH("LEFT")
     card.description:SetWordWrap(true)
 
     card.reason = card:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    card.reason:SetPoint("TOPLEFT", 14, -82)
+    card.reason:SetPoint("TOPLEFT", 14, -86)
     card.reason:SetPoint("RIGHT", -14, 0)
+    card.reason:SetHeight(20)
     card.reason:SetJustifyH("LEFT")
-    card.reason:SetWordWrap(false)
+    card.reason:SetWordWrap(true)
+
+    card:SetScript("OnEnter", function(self)
+        NS.UI.Theme:SetCardHovered(self, true)
+        NS.UI.Tooltips:ShowRecommendation(self, self.recommendation)
+    end)
+    card:SetScript("OnLeave", function()
+        NS.UI.Theme:SetCardHovered(card, false)
+        NS.UI.Tooltips:Hide()
+    end)
 
     return card
 end
 
 function RecommendationCard:SetData(card, recommendation)
+    card.recommendation = recommendation
     local label = NS.L.IMPORTANCE_LABELS[recommendation.importance] or recommendation.importance
     local color = NS.UI.Theme.IMPORTANCE_COLORS[recommendation.importance]
         or NS.UI.Theme.IMPORTANCE_COLORS.USEFUL

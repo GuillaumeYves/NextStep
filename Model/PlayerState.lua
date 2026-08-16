@@ -14,6 +14,8 @@ function PlayerState:New()
             maxLevel = nil,
             classID = nil,
             className = nil,
+            classFile = nil,
+            classColor = nil,
             specID = nil,
             specName = nil,
             averageItemLevel = nil,
@@ -36,10 +38,15 @@ function PlayerState:New()
         leveling = {
             dungeonFinderAvailable = false,
             availableDungeonCount = 0,
+            availableDungeons = {},
         },
         equipment = {
             items = {},
             emptySlots = {},
+            upgradeableItems = {},
+            lowestItem = nil,
+            classSet = { pieces = 0, requiredPieces = 4 },
+            classSetDetectionReady = false,
             upgradeEligibilityReliable = false,
         },
         vault = {
@@ -48,8 +55,33 @@ function PlayerState:New()
             activities = {},
             rewardsAvailable = false,
         },
-        weekly = {},
+        weekly = {
+            vault = {},
+            reset = { dataReady = false },
+        },
+        mythicPlus = {
+            active = false,
+            currentWeekRuns = {},
+            dataReady = false,
+        },
+        progression = {
+            dataReady = false,
+        },
         activities = {},
+        curatedRoutes = {
+            packID = nil,
+            patch = nil,
+            reviewedAt = nil,
+            phase = nil,
+            available = {},
+            dataReady = false,
+        },
+        patchCatalog = {
+            patch = nil,
+            reviewedAt = nil,
+            entries = {},
+            dataReady = false,
+        },
         capabilities = {
             character = false,
             experience = false,
@@ -58,6 +90,9 @@ function PlayerState:New()
             currencies = false,
             equipment = false,
             greatVault = false,
+            mythicPlus = false,
+            curatedRoutes = false,
+            patchCatalog = false,
         },
     }
 end
