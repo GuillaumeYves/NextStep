@@ -38,8 +38,26 @@ jobs:
       - name: Validate localization
         run: lua5.1 tools/validate-locales.lua NextStep.toc
 
-      - name: Test character preferences
+      - name: Test category planning and profile migration
         run: lua5.1 tests/preferences.lua
+
+      - name: Test compact recommendation navigation
+        run: lua5.1 tests/recommendation-navigation.lua
+
+      - name: Test leveling dungeon normalization
+        run: lua5.1 tests/leveling-dungeons.lua
+
+      - name: Test curated route selection
+        run: lua5.1 tests/curated-routes.lua
+
+      - name: Test curated route API wrappers
+        run: lua5.1 tests/route-api.lua
+
+      - name: Test patch collection catalog
+        run: lua5.1 tests/patch-catalog.lua
+
+      - name: Test character progression analysis
+        run: lua5.1 tests/progression-analysis.lua
 
       - name: Check text policy
         shell: bash

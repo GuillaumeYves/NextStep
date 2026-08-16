@@ -5,15 +5,8 @@ local MainWindow = {}
 NS.UI.MainWindow = MainWindow
 
 local validPoints = {
-    TOPLEFT = true,
-    TOP = true,
-    TOPRIGHT = true,
-    LEFT = true,
-    CENTER = true,
-    RIGHT = true,
-    BOTTOMLEFT = true,
-    BOTTOM = true,
-    BOTTOMRIGHT = true,
+    TOPLEFT = true, TOP = true, TOPRIGHT = true, LEFT = true, CENTER = true,
+    RIGHT = true, BOTTOMLEFT = true, BOTTOM = true, BOTTOMRIGHT = true,
 }
 
 function MainWindow:Create()
@@ -21,15 +14,23 @@ function MainWindow:Create()
         return self.frame
     end
 
-    local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-    frame:SetSize(640, 700)
+    local frame = CreateFrame("Frame", nil, UIParent, "PortraitFrameTemplate")
+    frame:SetSize(940, 920)
     frame:SetFrameStrata("HIGH")
     frame:SetClampedToScreen(true)
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton")
-    NS.UI.Theme:ApplyWindow(frame)
     frame:Hide()
+
+    if frame.TitleContainer and frame.TitleContainer.TitleText then
+        frame.TitleContainer.TitleText:SetText(NS.L.ADDON_NAME)
+    end
+    if frame.PortraitContainer and frame.PortraitContainer.portrait then
+        frame.PortraitContainer.portrait:SetTexture("Interface\\Icons\\INV_Misc_Map_01")
+    elseif frame.portrait then
+        frame.portrait:SetTexture("Interface\\Icons\\INV_Misc_Map_01")
+    end
 
     frame:SetScript("OnDragStart", function(self)
         if not NS.db.settings.lockWindow then
@@ -41,50 +42,50 @@ function MainWindow:Create()
         MainWindow:SavePosition()
     end)
 
-    frame.close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-    frame.close:SetPoint("TOPRIGHT", -6, -6)
-
     frame.header = NS.UI.Header:Create(frame)
 
-    frame.characterSummary = NS.UI.CharacterSummary:Create(frame)
-    frame.characterSummary:SetPoint("TOPLEFT", 24, -92)
-    frame.characterSummary:SetPoint("TOPRIGHT", -24, -92)
+    frame.content = CreateFrame("Frame", nil, frame, "InsetFrameTemplate")
+    frame.content:SetPoint("TOPLEFT", 4, -55)
+    frame.content:SetPoint("BOTTOMRIGHT", -6, 6)
 
-    frame.sectionTitle = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    frame.sectionTitle:SetPoint("TOPLEFT", 24, -178)
-    frame.sectionTitle:SetText(NS.L.WHAT_MATTERS_NEXT)
-    frame.sectionTitle:SetTextColor(unpack(NS.UI.Theme.COLORS.mutedGold))
+    frame.characterSummary = NS.UI.CharacterSummary:Create(frame.content)
+    frame.characterSummary:SetPoint("TOPLEFT", 12, -10)
+    frame.characterSummary:SetPoint("TOPRIGHT", -12, -10)
 
-    frame.recommendationList = NS.UI.RecommendationList:Create(frame)
-    frame.recommendationList:SetPoint("TOPLEFT", 24, -202)
-    frame.recommendationList:SetPoint("BOTTOMRIGHT", -24, 78)
+    frame.currencies = NS.UI.CurrencyStrip:Create(frame.content)
+    frame.currencies:SetPoint("TOPLEFT", 12, -68)
+    frame.currencies:SetPoint("TOPRIGHT", -12, -68)
 
-    frame.emptyState = NS.UI.EmptyState:Create(frame)
-    frame.emptyState:SetPoint("TOPLEFT", 24, -202)
-    frame.emptyState:SetPoint("BOTTOMRIGHT", -24, 78)
+    frame.vault = NS.UI.VaultPanel:Create(frame.content)
+    frame.vault:SetPoint("TOPLEFT", 12, -124)
+    frame.vault:SetPoint("TOPRIGHT", -12, -124)
 
-    frame.footerLine = frame:CreateTexture(nil, "ARTWORK")
+    frame.reset = frame.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    frame.reset:SetPoint("TOPLEFT", 16, -488)
+    frame.reset:SetPoint("RIGHT", -16, 0)
+    frame.reset:SetJustifyH("LEFT")
+
+    frame.categories = NS.UI.CategoryRows:Create(frame.content)
+    frame.categories:SetPoint("TOPLEFT", 18, -514)
+    frame.categories:SetPoint("BOTTOMRIGHT", -18, 42)
+
+    frame.footerLine = frame.content:CreateTexture(nil, "ARTWORK")
     frame.footerLine:SetColorTexture(0.42, 0.32, 0.16, 1)
-    frame.footerLine:SetPoint("BOTTOMLEFT", 24, 66)
-    frame.footerLine:SetPoint("BOTTOMRIGHT", -24, 66)
+    frame.footerLine:SetPoint("BOTTOMLEFT", 14, 36)
+    frame.footerLine:SetPoint("BOTTOMRIGHT", -14, 36)
     frame.footerLine:SetHeight(1)
 
-    frame.summary = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    frame.summary:SetPoint("BOTTOMLEFT", 24, 24)
-    frame.summary:SetPoint("RIGHT", -220, 0)
-    frame.summary:SetJustifyH("LEFT")
-
-    frame.refresh = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    frame.refresh:SetSize(82, 26)
-    frame.refresh:SetPoint("BOTTOMRIGHT", -112, 20)
+    frame.refresh = CreateFrame("Button", nil, frame.content, "UIPanelButtonTemplate")
+    frame.refresh:SetSize(82, 24)
+    frame.refresh:SetPoint("BOTTOMRIGHT", -100, 6)
     frame.refresh:SetText(NS.L.REFRESH)
     frame.refresh:SetScript("OnClick", function()
         NS:RequestRefresh("manual", 0)
     end)
 
-    frame.settings = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    frame.settings:SetSize(82, 26)
-    frame.settings:SetPoint("BOTTOMRIGHT", -24, 20)
+    frame.settings = CreateFrame("Button", nil, frame.content, "UIPanelButtonTemplate")
+    frame.settings:SetSize(82, 24)
+    frame.settings:SetPoint("BOTTOMRIGHT", -12, 6)
     frame.settings:SetText(NS.L.SETTINGS)
     frame.settings:SetScript("OnClick", function()
         NS.UI.Settings:Toggle()
@@ -95,40 +96,39 @@ function MainWindow:Create()
     return frame
 end
 
-function MainWindow:BuildSummary(state)
-    local vault = state.weekly and state.weekly.vault or {}
-    local vaultText
-    if state.vault and state.vault.dataReady then
-        vaultText = string.format(NS.L.VAULT_SUMMARY, vault.completedOptions or 0, vault.totalOptions or 0)
-    else
-        vaultText = NS.L.VAULT_UNAVAILABLE
+function MainWindow:BuildResetText(state)
+    local reset = state.weekly and state.weekly.reset or {}
+    local progression = state.progression or {}
+    local phase = NS.L.SEASON_PHASE_UNKNOWN
+    if progression.seasonPhase == "preseason" then
+        phase = NS.L.SEASON_PHASE_PRESEASON
+    elseif progression.seasonPhase == "active" then
+        phase = NS.L.SEASON_PHASE_ACTIVE
     end
-
-    local currency = state.currencies and state.currencies[1]
-    local currencyText = NS.L.NO_CURRENCY
-    if currency then
-        currencyText = string.format("%s %s", currency.name or NS.L.CURRENCY_FALLBACK, NS.Util.Formatting:Number(currency.quantity, "0"))
+    if not reset.dataReady or type(reset.resetAt) ~= "number" then
+        return phase .. "  " .. NS.L.WEEKLY_RESET_UNAVAILABLE
     end
-    return vaultText .. "  |  " .. currencyText
+    return string.format(
+        NS.L.WEEKLY_RESET_FORMAT,
+        phase,
+        date("%Y-%m-%d %H:%M", reset.resetAt),
+        reset.regionName or NS.L.UNKNOWN
+    )
 end
 
 function MainWindow:Update(state, plan)
     local frame = self:Create()
     NS.UI.Header:Update(frame.header, state.character)
-    NS.UI.CharacterSummary:Update(frame.characterSummary, state.character, state.experience)
-    NS.UI.RecommendationList:Update(frame.recommendationList, plan.recommendations or {})
-    NS.UI.EmptyState:Update(frame.emptyState, plan.fallbackMessage)
-    frame.emptyState:SetShown(plan.isFallback)
-    frame.summary:SetText(self:BuildSummary(state))
+    NS.UI.CharacterSummary:Update(frame.characterSummary, state.character, state.experience, state.equipment)
+    NS.UI.CurrencyStrip:Update(frame.currencies, state.currencies)
+    NS.UI.VaultPanel:Update(frame.vault, state.vault)
+    NS.UI.CategoryRows:Update(frame.categories, plan.categories)
+    frame.reset:SetText(self:BuildResetText(state))
 end
 
 function MainWindow:Toggle()
     local frame = self:Create()
-    if frame:IsShown() then
-        frame:Hide()
-    else
-        self:Show()
-    end
+    if frame:IsShown() then frame:Hide() else self:Show() end
 end
 
 function MainWindow:Show()
@@ -139,15 +139,10 @@ function MainWindow:Show()
 end
 
 function MainWindow:SavePosition()
-    if not self.frame or not NS.db.settings.rememberWindowPosition then
-        return
-    end
+    if not self.frame or not NS.db.settings.rememberWindowPosition then return end
     local point, _, relativePoint, x, y = self.frame:GetPoint(1)
     local position = NS.db.settings.window
-    position.point = point
-    position.relativePoint = relativePoint
-    position.x = x
-    position.y = y
+    position.point, position.relativePoint, position.x, position.y = point, relativePoint, x, y
 end
 
 function MainWindow:RestorePosition()
@@ -162,9 +157,7 @@ function MainWindow:RestorePosition()
 end
 
 function MainWindow:ResetPosition()
-    if not self.frame then
-        return
-    end
+    if not self.frame then return end
     self.frame:ClearAllPoints()
     self.frame:SetPoint("CENTER")
 end

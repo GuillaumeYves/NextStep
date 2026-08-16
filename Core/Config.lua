@@ -17,19 +17,18 @@ Config.DEFAULTS = {
             x = 0,
             y = 0,
         },
+        settingsWindow = {
+            point = "CENTER",
+            relativePoint = "CENTER",
+            x = 0,
+            y = 0,
+        },
     },
     characters = {},
 }
 
 Config.CHARACTER_DEFAULTS = {
     profileVersion = NS.Constants.CHARACTER_SCHEMA_VERSION,
-    onboardingComplete = false,
-    goals = {
-        experience = true,
-        gear = true,
-        mounts = false,
-        pets = false,
-    },
     widget = {
         enabled = true,
         point = "TOP",
@@ -48,12 +47,7 @@ function Config:GetCharacterKey(character)
 end
 
 function Config:GetCharacterDefaults(character)
-    local defaults = NS.Util.Table:Copy(self.CHARACTER_DEFAULTS)
-    if type(character) == "table" and type(character.level) == "number"
-        and type(character.maxLevel) == "number" and character.level >= character.maxLevel then
-        defaults.goals.experience = false
-    end
-    return defaults
+    return NS.Util.Table:Copy(self.CHARACTER_DEFAULTS)
 end
 
 function Config:GetCharacterProfile(character, create)

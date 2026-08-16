@@ -16,6 +16,13 @@ local refreshEvents = {
     QUEST_LOG_UPDATE = true,
     QUEST_TURNED_IN = true,
     SUPER_TRACKING_CHANGED = true,
+    LFG_UPDATE_RANDOM_INFO = true,
+    NEW_MOUNT_ADDED = true,
+    PET_JOURNAL_LIST_UPDATE = true,
+    GET_ITEM_INFO_RECEIVED = true,
+    CHALLENGE_MODE_COMPLETED = true,
+    ACHIEVEMENT_EARNED = true,
+    CRITERIA_UPDATE = true,
 }
 
 function Events:RegisterRuntimeEvents()
@@ -27,6 +34,13 @@ function Events:RegisterRuntimeEvents()
     self.frame:RegisterEvent("QUEST_LOG_UPDATE")
     self.frame:RegisterEvent("QUEST_TURNED_IN")
     self.frame:RegisterEvent("SUPER_TRACKING_CHANGED")
+    self.frame:RegisterEvent("LFG_UPDATE_RANDOM_INFO")
+    self.frame:RegisterEvent("NEW_MOUNT_ADDED")
+    self.frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
+    self.frame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+    self.frame:RegisterEvent("CHALLENGE_MODE_COMPLETED")
+    self.frame:RegisterEvent("ACHIEVEMENT_EARNED")
+    self.frame:RegisterEvent("CRITERIA_UPDATE")
     self.frame:RegisterEvent("UPDATE_EXHAUSTION")
     self.frame:RegisterEvent("PLAYER_XP_UPDATE")
     self.frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")

@@ -1,7 +1,7 @@
 local addonName, NS = ...
 
 NS.addonName = addonName
-NS.version = "0.3.0"
+NS.version = "0.9.0"
 NS.modules = NS.modules or {}
 
 function NS:RegisterModule(name, module)
@@ -28,7 +28,6 @@ function NS:Initialize()
     self.Config:InitializeDatabase()
     self.UI.MainWindow:Create()
     self.UI.NextStepWidget:Create()
-    self.UI.Onboarding:Create()
     self.UI.DebugWindow:Create()
     self.UI.Settings:Create()
     self:RegisterSlashCommands()
@@ -40,7 +39,7 @@ function NS:Refresh(reason)
         return
     end
 
-    local state = self.Data.Player:Collect()
+    local state = self.Data.Player:Collect(reason)
     self:BuildPlanFromState(state, reason)
     self.Data.Player:RecordCharacterSeen(state)
 end
@@ -69,7 +68,6 @@ function NS:BuildPlanFromState(state, reason)
 
     self.UI.MainWindow:Update(state, plan)
     self.UI.NextStepWidget:Update(state.character, plan)
-    self.UI.Onboarding:MaybeShow(state.character)
     self.lastRefreshReason = reason
 end
 
@@ -90,8 +88,6 @@ function NS:HandleSlashCommand(input)
 
     if command == "" then
         self.UI.MainWindow:Toggle()
-    elseif command == "tutorial" then
-        self.UI.Onboarding:ShowForCurrentCharacter()
     elseif command == "debug" then
         self.db.settings.debugMode = not self.db.settings.debugMode
         self:Print(self.db.settings.debugMode and self.L.DEBUG_MODE_ENABLED or self.L.DEBUG_MODE_DISABLED)
@@ -118,7 +114,7 @@ function NS:HandleSlashCommand(input)
         end
         self.UI.MainWindow:ResetPosition()
         self.UI.NextStepWidget:ResetPosition()
-        self.UI.Onboarding.dismissedThisSession = false
+        self.UI.Settings:ResetPosition()
         self.UI.Settings:Update()
         self:RequestRefresh("settings_reset", 0)
         self:Print(self.L.SETTINGS_RESET)

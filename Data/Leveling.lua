@@ -9,12 +9,15 @@ function Leveling:Collect(character)
         return {
             dungeonFinderAvailable = false,
             availableDungeonCount = 0,
+            availableDungeons = {},
         }, false
     end
 
-    local available, count, ready = NS.API.WoW:GetLevelingDungeonAvailability(character.level)
+    local available, dungeons, ready = NS.API.WoW:GetLevelingDungeons(character.level)
+    dungeons = type(dungeons) == "table" and dungeons or {}
     return {
         dungeonFinderAvailable = available,
-        availableDungeonCount = count,
+        availableDungeonCount = #dungeons,
+        availableDungeons = dungeons,
     }, ready
 end

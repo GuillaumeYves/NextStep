@@ -11,7 +11,7 @@ function Currency:Collect()
     for _, config in ipairs(NS.CurrencyConfig.tracked) do
         if config.enabled ~= false and type(config.currencyID) == "number" then
             local info = NS.API.WoW:GetCurrencyInfo(config.currencyID)
-            if info and info.discovered ~= false then
+            if info then
                 currencies[#currencies + 1] = {
                     currencyID = info.currencyID or config.currencyID,
                     name = info.name,
@@ -19,11 +19,17 @@ function Currency:Collect()
                     maxQuantity = info.maxQuantity,
                     weeklyQuantity = info.quantityEarnedThisWeek,
                     maxWeeklyQuantity = info.maxWeeklyQuantity,
+                    totalEarned = info.totalEarned,
+                    useTotalEarnedForMaxQuantity = info.useTotalEarnedForMaxQty,
                     tracked = true,
                     description = config.description or info.description,
                     iconFileID = info.iconFileID,
                     canEarnPerWeek = info.canEarnPerWeek,
                     isAccountWide = info.isAccountWide,
+                    currencyLink = NS.API.WoW:GetCurrencyLink(
+                        info.currencyID or config.currencyID,
+                        info.quantity
+                    ),
                 }
             end
         end
