@@ -43,7 +43,8 @@ function Player:RecordCharacterSeen(state)
         return
     end
 
-    local key = NS.Util.Formatting:CharacterKey(state.character)
-    NS.db.characters[key] = NS.db.characters[key] or {}
-    NS.db.characters[key].lastSeen = state.generatedAt
+    local profile = NS.Config:GetCharacterProfile(state.character, true)
+    if profile then
+        profile.lastSeen = state.generatedAt
+    end
 end

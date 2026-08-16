@@ -2,6 +2,24 @@
 
 All notable changes to NextStep are documented here.
 
+## 0.3.0 - 2026-08-16
+
+### Added
+
+- First-run setup for each character
+- Per-character experience, gear, mount, and battle pet goals
+- Movable compact window showing the highest-priority next step
+- Character controls for reopening setup and disabling the compact window
+- Goal metadata on normalized recommendations
+- Automated tests for character defaults, migration, goal filtering, and critical recommendations
+
+### Changed
+
+- Main, settings, debug, recommendation, and summary panels use a WoW-style dark and gold theme
+- The planner filters non-critical recommendations using the current character's selected goals
+- SavedVariables schema advanced to version 2 with additive character profile defaults
+- Reset now restores account settings and the active character profile
+
 ## 0.2.1 - 2026-08-16
 
 ### Added

@@ -3,7 +3,7 @@
 ## Notes: Know what matters for you next.
 ## Notes-frFR: Sachez ce qui compte pour la suite.
 ## Author: Guillaume YVES
-## Version: 0.2.1
+## Version: 0.3.0
 ## SavedVariables: NextStepDB
 ## IconTexture: Interface\Icons\INV_Misc_Map_01
 
@@ -49,11 +49,14 @@ Recommendation\Engine.lua
 
 Planner\Planner.lua
 
+UI\Theme.lua
 UI\Header.lua
 UI\RecommendationCard.lua
 UI\RecommendationList.lua
 UI\CharacterSummary.lua
 UI\EmptyState.lua
+UI\Onboarding.lua
+UI\NextStepWidget.lua
 UI\Settings.lua
 UI\DebugWindow.lua
 UI\MainWindow.lua

@@ -13,11 +13,12 @@ function Header:Create(parent)
     frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalHuge")
     frame.title:SetPoint("TOPLEFT")
     frame.title:SetText(NS.L.ADDON_NAME)
-    frame.title:SetTextColor(0.35, 0.78, 1)
+    frame.title:SetTextColor(unpack(NS.UI.Theme.COLORS.gold))
 
     frame.tagline = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     frame.tagline:SetPoint("TOPLEFT", frame.title, "BOTTOMLEFT", 0, -5)
     frame.tagline:SetText(NS.L.TAGLINE)
+    frame.tagline:SetTextColor(unpack(NS.UI.Theme.COLORS.text))
 
     frame.greeting = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     frame.greeting:SetPoint("TOPRIGHT", 0, -6)

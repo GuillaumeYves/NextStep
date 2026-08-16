@@ -28,13 +28,7 @@ function MainWindow:Create()
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton")
-    frame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
-        edgeFile = "Interface\\Buttons\\WHITE8X8",
-        edgeSize = 1,
-    })
-    frame:SetBackdropColor(0.025, 0.03, 0.04, 0.98)
-    frame:SetBackdropBorderColor(0.18, 0.22, 0.28, 1)
+    NS.UI.Theme:ApplyWindow(frame)
     frame:Hide()
 
     frame:SetScript("OnDragStart", function(self)
@@ -59,7 +53,7 @@ function MainWindow:Create()
     frame.sectionTitle = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.sectionTitle:SetPoint("TOPLEFT", 24, -178)
     frame.sectionTitle:SetText(NS.L.WHAT_MATTERS_NEXT)
-    frame.sectionTitle:SetTextColor(0.62, 0.68, 0.75)
+    frame.sectionTitle:SetTextColor(unpack(NS.UI.Theme.COLORS.mutedGold))
 
     frame.recommendationList = NS.UI.RecommendationList:Create(frame)
     frame.recommendationList:SetPoint("TOPLEFT", 24, -202)
@@ -70,7 +64,7 @@ function MainWindow:Create()
     frame.emptyState:SetPoint("BOTTOMRIGHT", -24, 78)
 
     frame.footerLine = frame:CreateTexture(nil, "ARTWORK")
-    frame.footerLine:SetColorTexture(0.18, 0.22, 0.28, 1)
+    frame.footerLine:SetColorTexture(0.42, 0.32, 0.16, 1)
     frame.footerLine:SetPoint("BOTTOMLEFT", 24, 66)
     frame.footerLine:SetPoint("BOTTOMRIGHT", -24, 66)
     frame.footerLine:SetHeight(1)
@@ -133,9 +127,15 @@ function MainWindow:Toggle()
     if frame:IsShown() then
         frame:Hide()
     else
-        frame:Show()
-        NS:RequestRefresh("window_opened", 0)
+        self:Show()
     end
+end
+
+function MainWindow:Show()
+    local frame = self:Create()
+    frame:Show()
+    frame:Raise()
+    NS:RequestRefresh("window_opened", 0)
 end
 
 function MainWindow:SavePosition()

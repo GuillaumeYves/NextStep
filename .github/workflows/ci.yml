@@ -38,6 +38,9 @@ jobs:
       - name: Validate localization
         run: lua5.1 tools/validate-locales.lua NextStep.toc
 
+      - name: Test character preferences
+        run: lua5.1 tests/preferences.lua
+
       - name: Check text policy
         shell: bash
         run: |

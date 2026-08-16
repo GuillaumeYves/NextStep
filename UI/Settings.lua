@@ -21,21 +21,17 @@ function Settings:Create()
     end
 
     local frame = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
-    frame:SetSize(410, 230)
+    frame:SetSize(440, 310)
     frame:SetPoint("CENTER")
     frame:SetFrameStrata("DIALOG")
     frame:SetClampedToScreen(true)
-    frame:SetBackdrop({
-        bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
-        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-        edgeSize = 24,
-        insets = { left = 6, right = 6, top = 6, bottom = 6 },
-    })
+    NS.UI.Theme:ApplyWindow(frame)
     frame:Hide()
 
     frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     frame.title:SetPoint("TOPLEFT", 20, -18)
     frame.title:SetText(NS.L.SETTINGS_TITLE)
+    frame.title:SetTextColor(unpack(NS.UI.Theme.COLORS.gold))
 
     frame.close = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
     frame.close:SetPoint("TOPRIGHT", -4, -4)
@@ -45,20 +41,24 @@ function Settings:Create()
         NS:RequestRefresh("settings_optional", 0)
     end)
 
-    frame.lock = createCheck(frame, NS.L.LOCK_WINDOW, -88, function(button)
+    frame.widget = createCheck(frame, NS.L.SHOW_NEXT_STEP_WIDGET, -88, function(button)
+        NS.UI.NextStepWidget:SetEnabled(button:GetChecked() and true or false)
+    end)
+
+    frame.lock = createCheck(frame, NS.L.LOCK_WINDOW, -121, function(button)
         NS.db.settings.lockWindow = button:GetChecked() and true or false
     end)
 
-    frame.remember = createCheck(frame, NS.L.REMEMBER_POSITION, -121, function(button)
+    frame.remember = createCheck(frame, NS.L.REMEMBER_POSITION, -154, function(button)
         NS.db.settings.rememberWindowPosition = button:GetChecked() and true or false
     end)
 
     frame.maximumLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    frame.maximumLabel:SetPoint("TOPLEFT", 24, -166)
+    frame.maximumLabel:SetPoint("TOPLEFT", 24, -202)
 
     frame.minus = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
     frame.minus:SetSize(28, 24)
-    frame.minus:SetPoint("TOPRIGHT", -72, -158)
+    frame.minus:SetPoint("TOPRIGHT", -72, -194)
     frame.minus:SetText("-")
     frame.minus:SetScript("OnClick", function()
         local value = math.max(NS.Constants.MIN_RECOMMENDATIONS, NS.db.settings.maximumRecommendations - 1)
@@ -78,6 +78,15 @@ function Settings:Create()
         NS:RequestRefresh("settings_maximum", 0)
     end)
 
+    frame.goals = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    frame.goals:SetSize(185, 28)
+    frame.goals:SetPoint("BOTTOMLEFT", 24, 24)
+    frame.goals:SetText(NS.L.EDIT_CHARACTER_GOALS)
+    frame.goals:SetScript("OnClick", function()
+        frame:Hide()
+        NS.UI.Onboarding:ShowForCurrentCharacter()
+    end)
+
     self.frame = frame
     self:Update()
     return frame
@@ -88,6 +97,9 @@ function Settings:Update()
         return
     end
     self.frame.optional:SetChecked(NS.db.settings.showOptionalRecommendations)
+    local profile = NS.Config:GetActiveCharacterProfile(false)
+    self.frame.widget:SetEnabled(profile ~= nil)
+    self.frame.widget:SetChecked(profile and profile.widget and profile.widget.enabled ~= false or false)
     self.frame.lock:SetChecked(NS.db.settings.lockWindow)
     self.frame.remember:SetChecked(NS.db.settings.rememberWindowPosition)
     self.frame.maximumLabel:SetText(string.format(NS.L.MAX_RECOMMENDATIONS, NS.db.settings.maximumRecommendations))

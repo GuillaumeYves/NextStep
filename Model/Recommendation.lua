@@ -17,6 +17,7 @@ function Recommendation:New(values)
         reason = values.reason,
         status = values.status,
         source = values.source,
+        goals = values.goals or {},
         estimatedMinutes = values.estimatedMinutes,
         actionData = values.actionData,
         metadata = values.metadata or {},

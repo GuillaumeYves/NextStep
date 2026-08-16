@@ -1,7 +1,7 @@
 local addonName, NS = ...
 
 NS.addonName = addonName
-NS.version = "0.2.1"
+NS.version = "0.3.0"
 NS.modules = NS.modules or {}
 
 function NS:RegisterModule(name, module)
@@ -27,6 +27,8 @@ function NS:Initialize()
 
     self.Config:InitializeDatabase()
     self.UI.MainWindow:Create()
+    self.UI.NextStepWidget:Create()
+    self.UI.Onboarding:Create()
     self.UI.DebugWindow:Create()
     self.UI.Settings:Create()
     self:RegisterSlashCommands()
@@ -66,6 +68,8 @@ function NS:BuildPlanFromState(state, reason)
     self.plan = plan
 
     self.UI.MainWindow:Update(state, plan)
+    self.UI.NextStepWidget:Update(state.character, plan)
+    self.UI.Onboarding:MaybeShow(state.character)
     self.lastRefreshReason = reason
 end
 
@@ -86,6 +90,8 @@ function NS:HandleSlashCommand(input)
 
     if command == "" then
         self.UI.MainWindow:Toggle()
+    elseif command == "tutorial" then
+        self.UI.Onboarding:ShowForCurrentCharacter()
     elseif command == "debug" then
         self.db.settings.debugMode = not self.db.settings.debugMode
         self:Print(self.db.settings.debugMode and self.L.DEBUG_MODE_ENABLED or self.L.DEBUG_MODE_DISABLED)
@@ -107,7 +113,12 @@ function NS:HandleSlashCommand(input)
         self.UI.DebugWindow:ShowRecommendations(self.ruleTrace, self.recommendations)
     elseif command == "reset" then
         self.Config:ResetSettings()
+        if self.playerState then
+            self.Config:ResetCharacterProfile(self.playerState.character)
+        end
         self.UI.MainWindow:ResetPosition()
+        self.UI.NextStepWidget:ResetPosition()
+        self.UI.Onboarding.dismissedThisSession = false
         self.UI.Settings:Update()
         self:RequestRefresh("settings_reset", 0)
         self:Print(self.L.SETTINGS_RESET)
