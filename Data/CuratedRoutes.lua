@@ -12,6 +12,14 @@ local function copyTable(source)
     return result
 end
 
+local function copyArray(source)
+    local result = {}
+    for _, value in ipairs(source or {}) do
+        result[#result + 1] = value
+    end
+    return result
+end
+
 local function contextRequirementsMatch(requirements, state)
     local character = state.character or {}
     local level = character.level
@@ -179,6 +187,7 @@ local function applyProgressMetadata(metadata, route, progress)
         metadata.achievementName = achievement.name
         metadata.rewardText = achievement.rewardText
         metadata.iconFileID = achievement.iconFileID
+        metadata.achievementLink = achievement.achievementLink
         metadata.progress = {
             current = achievement.completedCriteria,
             total = achievement.totalCriteria,
@@ -216,6 +225,7 @@ local function applyTargetMetadata(metadata, route, progress)
         dropRate = metadata.dropRate,
         dropRateKnown = type(metadata.dropRate) == "number",
         featured = metadata.featured == true,
+        tooltipLink = metadata.achievementLink,
     }
 
     local mountEntry = itemID and progress.mounts[itemID]
@@ -278,6 +288,31 @@ local function resolveSources(pack, route)
     return sources
 end
 
+local function buildCharacterCompletion(pack, progress)
+    local completion = {
+        current = 0,
+        total = 0,
+        entries = {},
+        dataReady = false,
+    }
+    for _, milestone in ipairs(pack.characterMilestones or {}) do
+        local quest = progress.quests[milestone.questID]
+        if quest and quest.known then
+            completion.total = completion.total + 1
+            if quest.completed then
+                completion.current = completion.current + 1
+            end
+            completion.entries[#completion.entries + 1] = {
+                id = milestone.id,
+                name = NS.L[milestone.titleKey] or milestone.id,
+                completed = quest.completed == true,
+            }
+        end
+    end
+    completion.dataReady = completion.total > 0
+    return completion
+end
+
 function CuratedRoutes:Collect(state)
     local packID = NS.SeasonConfig and NS.SeasonConfig.routePack
     local pack = packID and NS.RoutePacks and NS.RoutePacks[packID]
@@ -322,6 +357,7 @@ function CuratedRoutes:Collect(state)
                 available[#available + 1] = {
                     id = route.id,
                     goal = route.goal,
+                    goals = copyArray(route.goals or { route.goal }),
                     category = route.category,
                     priorityKey = route.priorityKey,
                     importance = route.importance,
@@ -341,6 +377,9 @@ function CuratedRoutes:Collect(state)
         reviewedAt = pack.reviewedAt,
         phase = pack.phase,
         available = available,
+        completion = {
+            character = buildCharacterCompletion(pack, progress),
+        },
         dataReady = true,
     }, true
 end

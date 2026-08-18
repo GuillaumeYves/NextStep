@@ -32,6 +32,7 @@ pack.routes[#pack.routes + 1] = {
     confidence = "high",
     evidence = "quest_reward",
     metadata = {
+        family = "collection_guaranteed",
         itemID = 246731,
         questID = 92899,
         startQuestID = 92895,
@@ -59,12 +60,19 @@ pack.routes[#pack.routes + 1] = {
     sourceIDs = { "icyVeinsGnarldor", "wowheadArcaneGolem" },
     confidence = "high",
     evidence = "fixed_treasure",
-    metadata = { itemID = 262496, x = 60.43, y = 68.11, featured = true },
+    metadata = {
+        family = "collection_guaranteed",
+        itemID = 262496,
+        x = 60.43,
+        y = 68.11,
+        featured = true,
+    },
 }
 
 pack.routes[#pack.routes + 1] = {
     id = "12_1_mount_auriferous_venomfang",
     goal = "mounts",
+    goals = { "mounts", "achievements" },
     category = "collection",
     priorityKey = "CURATED_COLLECTION_ACHIEVEMENT",
     importance = "USEFUL",
@@ -84,6 +92,7 @@ pack.routes[#pack.routes + 1] = {
     confidence = "high",
     evidence = "achievement_reward",
     metadata = {
+        family = "collection_achievement",
         itemID = 275656,
         achievementID = 63359,
         treasureCount = 22,
@@ -112,5 +121,10 @@ pack.routes[#pack.routes + 1] = {
     sourceIDs = { "wowheadWrithingBrood", "wowheadAltarOfFangs" },
     confidence = "high",
     evidence = "chance_drop",
-    metadata = { itemID = 276804, chanceBased = true, featured = true },
+    metadata = {
+        family = "collection_chance",
+        itemID = 276804,
+        chanceBased = true,
+        featured = true,
+    },
 }

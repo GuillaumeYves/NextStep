@@ -33,6 +33,8 @@ function Player:Collect(reason)
     state.activities = NS.Data.Activities:Collect(vault, quests, leveling)
     state.curatedRoutes, state.capabilities.curatedRoutes = NS.Data.CuratedRoutes:Collect(state)
     state.patchCatalog, state.capabilities.patchCatalog = NS.Data.PatchCatalog:Collect(state, reason)
+    state.patchProgress = NS.Data.PatchProgress:Collect(state)
+    state.capabilities.patchProgress = state.patchProgress.dataReady
     state.capabilities.character = characterReady
     state.capabilities.experience = experienceReady
     state.capabilities.questLog = questsReady

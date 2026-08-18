@@ -5,6 +5,7 @@ local NS = {
         FALLBACK_STALE_ROUTE_PACK = "stale",
         GOAL_LABELS = {
             experience = "Experience",
+            progression = "Campaign",
             gear = "Gear",
             mounts = "Mounts",
             pets = "Pets",
@@ -64,12 +65,43 @@ local recommendations = {
 
 local plan = NS.Planner:Build({ character = character }, recommendations)
 assert(#plan.recommendations == 2, "Legacy goal choices must not filter the plan.")
-assert(#plan.categories == 4, "The leveling category should be hidden at maximum level.")
-assert(plan.categories[1].id == "gear" and #plan.categories[1].tasks == 1,
-    "Gear tasks were not grouped first for a max-level character.")
-assert(#plan.categories[2].tasks == 0 and #plan.categories[3].tasks == 0
-    and #plan.categories[4].tasks == 0,
+assert(#plan.categories == 5, "Maximum-level characters should receive all five relevant categories.")
+assert(plan.categories[1].id == "progression" and #plan.categories[1].tasks == 0,
+    "Campaign and unlocks should be the first maximum-level category.")
+assert(plan.categories[2].id == "gear" and #plan.categories[2].tasks == 1,
+    "Gear tasks were not grouped after patch progression.")
+assert(#plan.categories[3].tasks == 0 and #plan.categories[4].tasks == 0
+    and #plan.categories[5].tasks == 0,
     "Empty supported collection categories should remain selectable.")
+
+local categoryPlan = NS.Planner:Build({ character = character }, {
+    {
+        id = "mount_achievement", importance = NS.Constants.IMPORTANCE.USEFUL,
+        status = NS.Constants.STATUS.AVAILABLE,
+        goals = { NS.Constants.GOAL.MOUNTS, NS.Constants.GOAL.ACHIEVEMENTS },
+    },
+    {
+        id = "mount_route", importance = NS.Constants.IMPORTANCE.USEFUL,
+        status = NS.Constants.STATUS.AVAILABLE, goals = { NS.Constants.GOAL.MOUNTS },
+    },
+})
+assert(#categoryPlan.categories[3].tasks == 2,
+    "A category should preserve multiple concrete route recommendations.")
+assert(#categoryPlan.categories[5].tasks == 1,
+    "A route with multiple goals should appear in each relevant category.")
+
+local weeklyPlan = NS.Planner:Build({ character = character }, {
+    {
+        id = "weekly", category = "weekly", importance = NS.Constants.IMPORTANCE.HIGH,
+        status = NS.Constants.STATUS.AVAILABLE,
+        goals = { NS.Constants.GOAL.PROGRESSION, NS.Constants.GOAL.GEAR },
+    },
+})
+assert(#weeklyPlan.categories[1].tasks == 0 and #weeklyPlan.categories[2].tasks == 0,
+    "Weekly work should remain outside scrollable campaign and gear categories.")
+
+assert(NS.Util.Formatting:RouteSteps({ "First", "Second", "Third" }, 2) == "1. First\n2. Second",
+    "Visible route steps should remain ordered and bounded.")
 
 local levelingPlan = NS.Planner:Build({
     character = { name = "Rookie", realm = "Realm", level = 20, maxLevel = 90 },

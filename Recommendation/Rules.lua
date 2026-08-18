@@ -83,8 +83,6 @@ function Rules:CuratedRoutes(state)
     for _, route in ipairs((state.curatedRoutes and state.curatedRoutes.available) or {}) do
         local priority = NS.Recommendation.Scoring.PRIORITY[route.priorityKey]
         if type(priority) == "number" then
-            local titleFormat = entry.kind == "achievement"
-                and NS.L.PATCH_CATALOG_ACHIEVEMENT_TITLE or NS.L.PATCH_CATALOG_TITLE
             results[#results + 1] = NS.Model.Recommendation:New({
                 id = route.id,
                 rule = "CuratedRoutes",
@@ -96,7 +94,7 @@ function Rules:CuratedRoutes(state)
                 reason = route.reason,
                 status = NS.Constants.STATUS.AVAILABLE,
                 source = route.source,
-                goals = { route.goal },
+                goals = route.goals or { route.goal },
                 metadata = route.metadata,
             })
         end
@@ -133,6 +131,8 @@ function Rules:PatchCatalog(state)
         end
         if not coverageKey or not covered[coverageKey] then
             local hasReward = type(entry.rewardText) == "string" and entry.rewardText ~= ""
+            local titleFormat = entry.kind == "achievement"
+                and NS.L.PATCH_CATALOG_ACHIEVEMENT_TITLE or NS.L.PATCH_CATALOG_TITLE
             results[#results + 1] = NS.Model.Recommendation:New({
                 id = entry.id,
                 rule = "PatchCatalog",
@@ -508,6 +508,7 @@ function Rules:FastGearRoute(state)
                 route.rewardText = NS.L.GEAR_ROUTE_WORLD_LAIR_REWARD
             end
             if title then
+                route.family = "gear"
                 route.patch = state.progression.patch
                 route.reviewedAt = state.progression.reviewedAt
                 route.confidence = state.progression.confidence
@@ -666,6 +667,7 @@ function Rules:GreatVault(state)
             status = NS.Constants.STATUS.AVAILABLE,
             source = "great_vault",
             goals = { NS.Constants.GOAL.GEAR },
+            metadata = { family = "weekly" },
         })
     end
 
@@ -690,6 +692,7 @@ function Rules:GreatVault(state)
             source = "great_vault_and_progression_meta",
             goals = { NS.Constants.GOAL.GEAR },
             metadata = {
+                family = "weekly",
                 activityID = dungeonPlan.activity.id,
                 targetLevel = dungeonPlan.targetLevel,
                 targetItemLevel = dungeonPlan.targetItemLevel,
@@ -754,6 +757,7 @@ function Rules:GreatVault(state)
                 source = "great_vault",
                 goals = { NS.Constants.GOAL.GEAR },
                 metadata = {
+                    family = "weekly",
                     activityID = activity.id,
                     vaultTypeKey = key,
                     threshold = activity.metadata.threshold,

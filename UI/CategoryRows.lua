@@ -4,12 +4,13 @@ NS.UI = NS.UI or {}
 local CategoryRows = {}
 NS.UI.CategoryRows = CategoryRows
 
-local ROW_HEIGHT = 118
+local ROW_HEIGHT = 154
 local ROW_GAP = 8
 local PREVIEW_COUNT = 5
 
 local GOAL_ICONS = {
     experience = "Interface\\Icons\\INV_Misc_Book_11",
+    progression = "Interface\\Icons\\INV_Misc_Map_01",
     gear = "Interface\\Icons\\INV_Chest_Chain_05",
     mounts = "Interface\\Icons\\Ability_Mount_RidingHorse",
     pets = "Interface\\Icons\\INV_Pet_Achievement_CaptureAWildPet",
@@ -21,6 +22,12 @@ local function firstSentence(value)
         return ""
     end
     return value:match("^(.-%.)%s") or value
+end
+
+local function routeSteps(recommendation)
+    local steps = recommendation and recommendation.metadata and recommendation.metadata.steps
+    return NS.Util.Formatting:RouteSteps(steps, 3)
+        or firstSentence(recommendation and recommendation.description)
 end
 
 local function patchLabel(value)
@@ -123,11 +130,15 @@ local function createRow(parent)
     row.task.accent:SetPoint("TOPLEFT", 1, -1)
     row.task.accent:SetPoint("BOTTOMLEFT", 1, 1)
     row.task.accent:SetWidth(3)
-    row.task.progress = CreateFrame("StatusBar", nil, row.task)
-    row.task.progress:SetPoint("BOTTOMLEFT", 4, 3)
-    row.task.progress:SetPoint("BOTTOMRIGHT", -4, 3)
-    row.task.progress:SetHeight(3)
+    row.task.progress = CreateFrame("StatusBar", nil, row.task, "BackdropTemplate")
+    row.task.progress:SetPoint("BOTTOMLEFT", 6, 5)
+    row.task.progress:SetPoint("BOTTOMRIGHT", -6, 5)
+    row.task.progress:SetHeight(12)
     row.task.progress:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    NS.UI.Theme:ApplyCard(row.task.progress)
+    row.task.progress.text = row.task.progress:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.task.progress.text:SetPoint("CENTER", 0, 0)
+    row.task.progress.text:SetShadowOffset(1, -1)
     row.task:SetScript("OnEnter", function(self)
         NS.UI.Theme:SetCardHovered(self, true)
         NS.UI.Tooltips:ShowRecommendation(self, self.recommendation)
@@ -174,15 +185,15 @@ local function createRow(parent)
     row.step = row.task:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.step:SetPoint("TOPLEFT", 74, -38)
     row.step:SetPoint("RIGHT", -10, 0)
-    row.step:SetHeight(24)
+    row.step:SetHeight(58)
     row.step:SetJustifyH("LEFT")
     row.step:SetJustifyV("TOP")
     row.step:SetWordWrap(true)
 
     row.reason = row.task:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-    row.reason:SetPoint("BOTTOMLEFT", 74, 8)
+    row.reason:SetPoint("BOTTOMLEFT", 74, 20)
     row.reason:SetPoint("RIGHT", -10, 0)
-    row.reason:SetHeight(22)
+    row.reason:SetHeight(30)
     row.reason:SetJustifyH("LEFT")
     row.reason:SetWordWrap(true)
 
@@ -244,16 +255,41 @@ updateRow = function(row, category, index)
         local metadata = task.metadata or {}
         local target = metadata.target or {}
         row.title:SetText(task.title or "")
-        row.step:SetText(firstSentence(task.description))
+        row.step:SetText(routeSteps(task))
         row.reason:SetText(NS.L.WHY_PREFIX .. firstSentence(task.reason))
         local progress = task.metadata and task.metadata.progress
         if progress and type(progress.current) == "number" and type(progress.total) == "number"
             and progress.total > 0 then
             row.task.progress:SetMinMaxValues(0, progress.total)
             row.task.progress:SetValue(math.min(progress.current, progress.total))
-            row.task.progress:SetStatusBarColor(goalColor[1], goalColor[2], goalColor[3])
+            local progressColor = NS.UI.Theme:GetProgressColor(progress.current, progress.total)
+            row.task.progress:SetStatusBarColor(
+                progressColor[1],
+                progressColor[2],
+                progressColor[3],
+                1
+            )
+            row.task.progress:SetBackdropBorderColor(
+                progressColor[1],
+                progressColor[2],
+                progressColor[3],
+                1
+            )
+            row.task.progress:SetBackdropColor(
+                progressColor[1] * 0.16,
+                progressColor[2] * 0.16,
+                progressColor[3] * 0.16,
+                0.95
+            )
+            row.task.progress.text:SetText(string.format(
+                NS.L.TASK_PROGRESS_BAR_FORMAT,
+                progress.current,
+                progress.total,
+                math.floor((math.min(progress.current, progress.total) / progress.total) * 100 + 0.5)
+            ))
             row.task.progress:Show()
         else
+            row.task.progress.text:SetText("")
             row.task.progress:Hide()
         end
         row.target.icon:SetTexture(target.iconFileID or metadata.iconFileID or GOAL_ICONS[category.id])
@@ -275,6 +311,7 @@ updateRow = function(row, category, index)
         row.step:SetText(NS.L.CATEGORY_NO_TASK_DESCRIPTION)
         row.reason:SetText(NS.L.CATEGORY_NO_TASK_REASON)
         row.task.progress:Hide()
+        row.task.progress.text:SetText("")
         row.target.icon:SetTexture(GOAL_ICONS[category.id] or "Interface\\Icons\\INV_Misc_QuestionMark")
         row.acquisition:Hide()
     end

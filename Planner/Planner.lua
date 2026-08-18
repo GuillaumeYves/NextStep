@@ -44,7 +44,9 @@ function Planner:Build(state, recommendations)
         and type(state.character.maxLevel) == "number"
         and state.character.level >= state.character.maxLevel
     for _, goal in ipairs(NS.Constants.GOAL_ORDER) do
-        if goal ~= NS.Constants.GOAL.EXPERIENCE or not atMaxLevel then
+        local maxLevelOnly = goal == NS.Constants.GOAL.PROGRESSION
+        if (goal ~= NS.Constants.GOAL.EXPERIENCE or not atMaxLevel)
+            and (not maxLevelOnly or atMaxLevel) then
             local tasks = {}
             for _, recommendation in ipairs(categoryEligible) do
                 if hasGoal(recommendation, goal) and recommendation.category ~= "weekly" then

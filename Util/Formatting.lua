@@ -51,3 +51,16 @@ function Formatting:List(values, maximum, remainderFormat)
     end
     return result
 end
+
+function Formatting:RouteSteps(steps, maximum)
+    if type(steps) ~= "table" or #steps == 0 then
+        return nil
+    end
+
+    local visible = {}
+    maximum = math.max(1, tonumber(maximum) or #steps)
+    for index = 1, math.min(maximum, #steps) do
+        visible[#visible + 1] = index .. ". " .. steps[index]
+    end
+    return table.concat(visible, "\n")
+end

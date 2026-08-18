@@ -442,12 +442,19 @@ function WoW:GetAchievementProgress(achievementID)
         }
     end
 
+    local achievementLink
+    if type(GetAchievementLink) == "function" then
+        local linkOK, link = SafeCall:Invoke(GetAchievementLink, achievementID)
+        achievementLink = linkOK and link or nil
+    end
+
     return {
         achievementID = achievementID,
         name = name,
         description = description,
         iconFileID = icon,
         rewardText = rewardText,
+        achievementLink = achievementLink,
         completed = completed == true,
         completedCriteria = completedCount,
         totalCriteria = criteriaCount,

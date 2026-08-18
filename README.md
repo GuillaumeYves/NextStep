@@ -25,17 +25,20 @@ The first production milestone provides:
 - A friendly fallback when no important action can be detected
 - Saved settings and window position
 - Automatic locale selection from the WoW client
-- Automatic experience, gear, mount, battle pet, and achievement category analysis
-- A locally shipped 12.1 route pack for leveling, gearing, mounts, and battle pets
+- Automatic experience, campaign and unlock, gear, mount, battle pet, and achievement category analysis
+- A locally shipped 12.1 route pack for leveling, story chapters, zone and activity unlocks, Delves, raid access, gearing, mounts, and battle pets
 - A public 12.1 catalog snapshot covering 64 mount spells, 36 collectible pet species, and 149 achievements
 - Localized collection names, icons, sources, descriptions, rewards, and completion state read from the Retail client
 - Character-aware route selection using level, item level, quest completion, achievement progress, season state, and collection ownership
 - Ordered route details with live criteria progress, missing objectives, source, confidence, patch, and review metadata
-- A movable compact window with a category selector, current step, short reason, and Open Plan button
-- A main plan organized into character, Great Vault, reset, and per-category task carousels
+- A movable compact window with a category selector, current route, short reason, and Open Plan button
+- A main plan organized into character, Great Vault, reset, and per-category route carousels
 - Native Retail Vault artwork, locked and unlocked cards, checkmarks, and category panels
 - Exact completed raid encounters and generated reward links in Vault tooltips when the client exposes them
-- Multiple target reward icons per category, item tooltips, acquisition labels, and bounded carousel navigation
+- Multiple concrete routes per supported category, visible ordered steps, target reward icons, acquisition labels, and bounded carousel navigation
+- Fixed character and account completion bars below the season status, with detailed hover counts
+- Red, orange, yellow, and green completion bars that become greener as tracked work approaches completion
+- Native client item, mount, and achievement hovers plus client collection details on target tiles and task cards
 - Optional incomplete 4-piece class-set guidance when equipped set detection is reliable
 - A movable settings window with a saved position
 - Structured state and rule diagnostics
@@ -99,7 +102,7 @@ NextStep combines dynamic character state from Blizzard APIs with curated patch 
 
 Claims such as fastest route, best farm, or best upgrade path require direct and current evidence. When that evidence is unavailable, NextStep uses precise neutral wording or omits the recommendation.
 
-The 12.1 pack was reviewed on 2026-08-16 and currently contains:
+The 12.1 pack was reviewed on 2026-08-18 and currently contains:
 
 - Blizzard's current progression path through Exile's Reach, Dragonflight, The War Within, and Midnight
 - A community-optimized Midnight alt route using one-time Delver's Calls, zone quests, and optional first-time profession crafts
@@ -107,6 +110,12 @@ The 12.1 pack was reviewed on 2026-08-16 and currently contains:
 - Reward breakpoints at +2, +4, +7, and +10
 - Mythic 0 item level 292 Champion 1/6 rewards with the current weekly pre-season lockout
 - World Lair item level 279 Veteran 1/6 guidance only for equipped slots below that reward
+- Legacy of the Amani campaign completion through Dead End, followed by the Coiled Isle activity unlock route
+- Coiled Isle public event and Curse Surge steps, including the documented Cursed Fishing unlock
+- Separate Vaults of Atal'Utek public-event and Tokka local-story and reputation routes
+- The three new 12.1 Delves as playable content unlocks through Journeys
+- Venomous Abyss access and Great Vault boss thresholds without encounter or combat guidance
+- Dynamic weekly Great Vault and character-specific gearing work kept under Gear instead of Campaign and Unlocks
 - Adventurer, Veteran, Champion, Hero, and Myth Mistcrest definitions
 - The Dusk Grimlynx route through the History Lesson quest
 - The Akiki battle pet route through the Dead End quest
@@ -117,7 +126,7 @@ The 12.1 pack was reviewed on 2026-08-16 and currently contains:
 - Every public achievement in the reviewed 12.1 database snapshot, filtered against live character completion
 - Every supported 12.1 mount and collectible pet record, filtered against the live Mount and Pet Journals
 
-At the 2026-08-16 review point, Season 2 was still in its pre-season week. Mythic 0 has one weekly loot lockout per dungeon and drops item level 292 Champion 1/6 gear. It becomes a daily lockout after the August 18 Americas reset or August 19 European reset. Current Delves have no Bountiful rewards, and only World difficulty is active for Lairs. NextStep keeps future Mythic Plus and Season 2 reward paths dormant until the client reports that the season is active.
+At the 2026-08-18 review point, Season 2 activates with the August 18 Americas reset and August 19 European reset. Mythic 0 changes from its pre-season weekly lockout to a daily lockout, Bountiful Delves and keys activate, Venomous Abyss opens its first Raid Finder wing and organized difficulties, and higher Lair difficulties activate. NextStep uses the live Mythic Plus state to keep these routes dormant until the season is active for the character's region.
 
 Present-tense pre-season guidance is capped at item level 298. This is a conservative local ceiling based on the current live reward state, not a claim that Blizzard published a universal 298 cap. Vault item levels still come from the client's preview links. During pre-season, those values are labeled as next-reset previews and are never presented as rewards already available this week.
 
@@ -165,7 +174,7 @@ Version 0.9.0 moves the main plan onto Blizzard's portrait panel structure, show
 - Gear routes use published reward bands and known slots below each band. They cannot promise that a random drop will usefully replace a specific item.
 - Curated data is static until the addon files are updated. It is not downloaded while WoW is running.
 - The public patch catalog uses the client source text when an exact curated route is unavailable. If the client source is vague or absent, NextStep says so instead of inventing steps.
-- The addon cannot observe every intermediate route step. Where an exact completion API is unavailable, it shows the first defensible step and keeps the full ordered path in the card tooltip.
+- The addon cannot observe every intermediate route step. It shows up to three verified ordered steps in each route row and keeps the full path in the card tooltip.
 - Version 0.9.0 changes have not been tested inside a live WoW client in this repository session.
 - Localized layouts and French wording still require in-game review.
 - Client locales other than English and French currently fall back to English.
@@ -234,7 +243,7 @@ Reviewed against the extracted live 12.1.0 Blizzard UI source and generated API 
 | `C_QuestLog.IsQuestFlaggedCompleted` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, generated Quest Log docs | Unknown API state suppresses routes that require historical quest completion | `QUEST_LOG_UPDATE`, `QUEST_TURNED_IN` |
 | `C_LFGInfo.CanPlayerUseLFD`, `GetLevelUpInstances`, `GetDungeonInfo` | `API/WoW.lua` | Confident, generated LFGInfo docs | Returns localized available choices and metadata, not speed or reward ranking | `UNIT_LEVEL`, `PLAYER_ENTERING_WORLD`, `LFG_UPDATE_RANDOM_INFO` |
 | `C_MountJournal.GetMountFromItem`, `GetMountInfoByID` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, generated Mount Journal docs | A missing item mapping or unavailable collection result suppresses the route | `NEW_MOUNT_ADDED`, `PLAYER_ENTERING_WORLD` |
-| `C_MountJournal.GetMountFromSpell`, `GetMountInfoExtraByID`, `GetMountLink` | `API/WoW.lua`, `Data/PatchCatalog.lua` | Confident, current generated Mount Journal docs | Client source text can be broad for promotions or unreleased entries; hidden character-specific entries are suppressed | `NEW_MOUNT_ADDED`, `PLAYER_ENTERING_WORLD` |
+| `C_MountJournal.GetMountFromSpell`, `GetMountInfoExtraByID`, `GetMountLink` | `API/WoW.lua`, `Data/PatchCatalog.lua` | Confident, current generated Mount Journal docs | Client source text can be broad for promotions or entries not currently obtainable; hidden character-specific entries are suppressed | `NEW_MOUNT_ADDED`, `PLAYER_ENTERING_WORLD` |
 | `C_PetJournal.GetNumPetsInJournal` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, generated Pet Journal docs | Uses the documented creature ID count and suppresses the route when unavailable | `PET_JOURNAL_LIST_UPDATE`, `PLAYER_ENTERING_WORLD` |
 | `C_PetJournal.GetPetInfoBySpeciesID` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, used by Blizzard live Pet Collection UI | Name and icon can be unavailable while collection data loads | `PET_JOURNAL_LIST_UPDATE`, `PLAYER_ENTERING_WORLD` |
 | `C_PetJournal.GetNumCollectedInfo` | `API/WoW.lua`, `Data/PatchCatalog.lua` | Confident, current generated Pet Journal docs | Collection count is character-account journal state; entries marked unobtainable by the client are suppressed | `PET_JOURNAL_LIST_UPDATE`, `PLAYER_ENTERING_WORLD` |

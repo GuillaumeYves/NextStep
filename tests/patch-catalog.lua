@@ -45,6 +45,7 @@ function NS.API.WoW:GetAchievementProgress(achievementID)
         description = "Achievement requirement",
         iconFileID = 3,
         completed = achievementID == 63359,
+        achievementLink = "achievement:" .. achievementID,
         completedCriteria = 0,
         totalCriteria = 1,
         criteria = { { name = "Do the exact requirement", completed = false } },
@@ -77,5 +78,16 @@ for _, entry in ipairs(catalog.entries) do
     end
 end
 assert(foundUpcoming, "Season-gated collection entries should be marked upcoming in pre-season.")
+assert(catalog.completion.account.current == 3,
+    "Collected mounts, pets, and achievements should contribute to account progress.")
+assert(catalog.completion.account.total == 249,
+    "Account progress should use every known, obtainable 12.1 catalog entry.")
+for _, entry in ipairs(catalog.entries) do
+    if entry.kind == "achievement" then
+        assert(entry.target.tooltipLink == "achievement:" .. entry.achievementID,
+            "Achievement targets should preserve their native tooltip link.")
+        break
+    end
+end
 
 print("Patch collection catalog tests passed.")

@@ -2,6 +2,29 @@
 
 All notable changes to NextStep are documented here.
 
+## 0.10.0 - 2026-08-18
+
+### Added
+
+- Up to three ordered route steps directly in each selected category route
+- Achievement-backed mount and pet routes in both their reward category and the achievement category
+- A maximum-level Campaign and Unlocks category for storyline, zone access, public activities, reputations, and new playable content
+- Character-gated Legacy of the Amani, Coiled Isle, Vaults of Atal'Utek, Tokka reputation, and 12.1 Delve routes
+- Fixed character and account completion bars below the season status
+- Red, orange, yellow, and green completion states on visible progress bars
+- Native item, mount, and achievement links plus client collection details on route hover targets
+- A Season-gated Venomous Abyss access and reward route under Gear
+- Explicit coverage metadata and tests for campaign, weekly, Delve and outdoor, gear, raid, guaranteed or achievement collections, and chance collections
+
+### Changed
+
+- Dynamic Great Vault and character-specific gearing routes remain under Gear instead of appearing in Campaign and Unlocks
+- The 12.1 route pack review date and official Blizzard sources now cover the live Season 2 rollout
+
+### Fixed
+
+- Curated routes and patch catalog entries no longer disappear when their recommendation rules run
+
 ## 0.9.0 - 2026-08-16
 
 ### Added

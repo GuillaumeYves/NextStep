@@ -114,6 +114,11 @@ GetAchievementNumCriteria = function(achievementID)
     return 2
 end
 
+GetAchievementLink = function(achievementID)
+    assert(achievementID == 62492, "Unexpected achievement link request.")
+    return "achievement:62492"
+end
+
 GetAchievementCriteriaInfo = function(achievementID, index, countHidden)
     assert(achievementID == 62492 and countHidden == true, "Achievement criteria arguments were not preserved.")
     return index == 1 and "Poisoned Parasite" or "Cursed Spawn", 96, index == 1,
@@ -260,6 +265,7 @@ local achievement, achievementKnown = NS.API.WoW:GetAchievementProgress(62492)
 assert(achievementKnown == true and achievement.completed == false, "Achievement state was not normalized.")
 assert(achievement.completedCriteria == 1 and achievement.totalCriteria == 2, "Achievement progress was not counted.")
 assert(achievement.criteria[2].name == "Cursed Spawn", "Achievement criteria were not preserved.")
+assert(achievement.achievementLink == "achievement:62492", "The native achievement tooltip link was not preserved.")
 
 local item, itemKnown = NS.API.WoW:GetEquippedItemDetails(1)
 assert(itemKnown == true and item.itemLevel == 292, "Equipped item level was not normalized.")

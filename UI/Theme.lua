@@ -16,6 +16,7 @@ Theme.COLORS = {
 
 Theme.GOAL_COLORS = {
     experience = { 0.35, 0.78, 1 },
+    progression = { 0.34, 0.76, 0.68 },
     gear = { 0.78, 0.48, 1 },
     mounts = { 1, 0.66, 0.25 },
     pets = { 0.38, 0.84, 0.48 },
@@ -29,6 +30,31 @@ Theme.IMPORTANCE_COLORS = {
     OPTIONAL = { 0.7, 0.7, 0.7 },
     COMPLETED = { 0.36, 0.82, 0.45 },
 }
+
+Theme.PROGRESS_COLORS = {
+    low = { 0.88, 0.18, 0.16 },
+    mediumLow = { 1, 0.48, 0.10 },
+    mediumHigh = { 1, 0.82, 0.12 },
+    high = { 0.24, 0.82, 0.32 },
+    unavailable = { 0.42, 0.42, 0.42 },
+}
+
+function Theme:GetProgressColor(current, total)
+    current = tonumber(current) or 0
+    total = tonumber(total) or 0
+    if total <= 0 then
+        return self.PROGRESS_COLORS.unavailable
+    end
+    local ratio = math.max(0, math.min(1, current / total))
+    if ratio < 0.25 then
+        return self.PROGRESS_COLORS.low
+    elseif ratio < 0.5 then
+        return self.PROGRESS_COLORS.mediumLow
+    elseif ratio < 0.75 then
+        return self.PROGRESS_COLORS.mediumHigh
+    end
+    return self.PROGRESS_COLORS.high
+end
 
 local windowBackdrop = {
     bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",

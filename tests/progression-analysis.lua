@@ -73,7 +73,7 @@ loadAddonFile("Data/Weekly.lua")
 loadAddonFile("Model/Recommendation.lua")
 
 NS.Constants = {
-    GOAL = { EXPERIENCE = "experience", GEAR = "gear" },
+    GOAL = { EXPERIENCE = "experience", PROGRESSION = "progression", GEAR = "gear" },
     IMPORTANCE = { CRITICAL = "CRITICAL", HIGH = "HIGH", USEFUL = "USEFUL" },
     IMPORTANCE_SCORE = { CRITICAL = 100, HIGH = 80, USEFUL = 50 },
     STATUS = { AVAILABLE = "available" },
@@ -170,6 +170,10 @@ local vaultRecommendations = NS.Recommendation.Rules:GreatVault(state)
 assert(#vaultRecommendations == 1, "The optimized dungeon plan should replace the generic dungeon plan.")
 assert(vaultRecommendations[1].description:match("3 more dungeons at Mythic %+7"), "The optimized Vault path is not exact.")
 assert(vaultRecommendations[1].title:match("315"), "The target Vault item level is missing.")
+assert(vaultRecommendations[1].metadata.family == "weekly",
+    "Dynamic Great Vault recommendations should cover the weekly family.")
+assert(#vaultRecommendations[1].goals == 1 and vaultRecommendations[1].goals[1] == "gear",
+    "Dynamic weekly work should remain in gearing instead of campaign progression.")
 
 state.mythicPlus.active = false
 state.character.averageItemLevel = 300
@@ -199,6 +203,10 @@ local preseasonGearRoutes = NS.Recommendation.Rules:FastGearRoute(state)
 assert(#preseasonGearRoutes == 2, "Both useful pre-season gear activities should be recommended.")
 assert(preseasonGearRoutes[1].title:match("weekly Mythic 0"),
     "Mythic 0 should be the first precise pre-season gearing step.")
+assert(preseasonGearRoutes[1].metadata.family == "gear",
+    "Character-specific gear routes should cover the gear family.")
+assert(#preseasonGearRoutes[1].goals == 1 and preseasonGearRoutes[1].goals[1] == "gear",
+    "Character-specific gear routes should not appear in campaign progression.")
 local preseasonUpgrade = NS.Recommendation.Rules:UpgradeableEquipment(state)
 assert(preseasonUpgrade.metadata.maxItemLevel == 298, "Pre-season item guidance exceeded the current ceiling.")
 assert(preseasonUpgrade.metadata.trackMaxItemLevel == 308, "The underlying client track maximum was not retained.")

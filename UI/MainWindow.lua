@@ -65,8 +65,12 @@ function MainWindow:Create()
     frame.reset:SetPoint("RIGHT", -16, 0)
     frame.reset:SetJustifyH("LEFT")
 
+    frame.patchProgress = NS.UI.PatchProgress:Create(frame.content)
+    frame.patchProgress:SetPoint("TOPLEFT", 12, -508)
+    frame.patchProgress:SetPoint("TOPRIGHT", -12, -508)
+
     frame.categories = NS.UI.CategoryRows:Create(frame.content)
-    frame.categories:SetPoint("TOPLEFT", 18, -514)
+    frame.categories:SetPoint("TOPLEFT", 18, -570)
     frame.categories:SetPoint("BOTTOMRIGHT", -18, 42)
 
     frame.footerLine = frame.content:CreateTexture(nil, "ARTWORK")
@@ -122,6 +126,7 @@ function MainWindow:Update(state, plan)
     NS.UI.CharacterSummary:Update(frame.characterSummary, state.character, state.experience, state.equipment)
     NS.UI.CurrencyStrip:Update(frame.currencies, state.currencies)
     NS.UI.VaultPanel:Update(frame.vault, state.vault)
+    NS.UI.PatchProgress:Update(frame.patchProgress, state.patchProgress)
     NS.UI.CategoryRows:Update(frame.categories, plan.categories)
     frame.reset:SetText(self:BuildResetText(state))
 end
