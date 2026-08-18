@@ -188,7 +188,7 @@ This boundary follows Blizzard's published goal that addons should not automate 
 - Keep Blizzard calls inside `API/` and `Data/`.
 - Keep priorities inside `Recommendation/Scoring.lua`.
 - Keep user-facing strings centralized for future localization.
-- Add speculative features to `TODO.md` instead of silently implementing them.
+- Keep speculative features out of implementation until they are explicitly requested.
 - Include exact manual in-game test steps with every implementation change.
 
 ## Continuous integration
