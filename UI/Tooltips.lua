@@ -45,6 +45,19 @@ local function targetCanPreview(target)
     )
 end
 
+local function targetTooltipLink(target)
+    if type(target) ~= "table" then
+        return nil
+    end
+    if type(target.tooltipLink) == "string" and target.tooltipLink ~= "" then
+        return target.tooltipLink
+    end
+    if type(target.itemLink) == "string" and target.itemLink ~= "" then
+        return target.itemLink
+    end
+    return nil
+end
+
 local function addPreviewHint(target)
     if targetCanPreview(target) then
         addSpacer()
@@ -60,8 +73,9 @@ function Tooltips:ShowRecommendation(owner, recommendation, anchor)
     local target = metadata.target or {}
     GameTooltip:SetOwner(owner, anchor or "ANCHOR_RIGHT")
     GameTooltip:SetMinimumWidth(360)
-    if target.kind == "item" and target.itemLink then
-        GameTooltip:SetHyperlink(target.itemLink)
+    local tooltipLink = targetTooltipLink(target)
+    if tooltipLink then
+        GameTooltip:SetHyperlink(tooltipLink)
         addSpacer()
         addHeading(recommendation.title or NS.L.ADDON_NAME)
     else
@@ -74,6 +88,14 @@ function Tooltips:ShowRecommendation(owner, recommendation, anchor)
         addSpacer()
         addHeading(NS.L.TASK_TOOLTIP_WHY)
         GameTooltip:AddLine(recommendation.reason, 0.9, 0.9, 0.9, true)
+    end
+    if type(metadata.sourceText) == "string" and metadata.sourceText ~= "" then
+        addSpacer()
+        addHeading(NS.L.TASK_TOOLTIP_SOURCE)
+        GameTooltip:AddLine(metadata.sourceText, 0.9, 0.9, 0.9, true)
+    end
+    if type(metadata.flavorText) == "string" and metadata.flavorText ~= "" then
+        GameTooltip:AddLine(metadata.flavorText, 0.65, 0.65, 0.65, true)
     end
 
     local progress = metadata.progress
@@ -151,9 +173,10 @@ function Tooltips:ShowTarget(owner, recommendation)
         self:ShowRecommendation(owner, recommendation)
         return
     end
-    if target.itemLink then
+    local tooltipLink = targetTooltipLink(target)
+    if tooltipLink then
         GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
-        GameTooltip:SetHyperlink(target.itemLink)
+        GameTooltip:SetHyperlink(tooltipLink)
         addSpacer()
         addHeading(NS.L.TASK_TOOLTIP_ACQUISITION)
         GameTooltip:AddLine(
@@ -173,6 +196,32 @@ function Tooltips:ShowTarget(owner, recommendation)
         return
     end
     self:ShowRecommendation(owner, recommendation)
+end
+
+function Tooltips:ShowPatchProgress(owner, progress, title)
+    progress = progress or {}
+    GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
+    GameTooltip:SetMinimumWidth(340)
+    GameTooltip:SetText(title or NS.L.PATCH_PROGRESS_TITLE)
+    GameTooltip:AddLine(string.format(
+        NS.L.PATCH_PROGRESS_TOOLTIP_TOTAL,
+        progress.current or 0,
+        progress.total or 0
+    ), 1, 1, 1, true)
+    for _, group in ipairs(progress.groups or {}) do
+        if group.dataReady then
+            local label = NS.L.PATCH_PROGRESS_GROUPS[group.id] or group.id
+            GameTooltip:AddDoubleLine(
+                label,
+                string.format(NS.L.PATCH_PROGRESS_VALUE, group.current or 0, group.total or 0),
+                0.9, 0.9, 0.9,
+                0.45, 0.85, 1
+            )
+        end
+    end
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine(NS.L.PATCH_PROGRESS_SCOPE_NOTE, 0.65, 0.65, 0.65, true)
+    GameTooltip:Show()
 end
 
 function Tooltips:HandleTargetClick(target)
@@ -252,4 +301,7 @@ end
 function Tooltips:Hide()
     GameTooltip:Hide()
     GameTooltip:SetMinimumWidth(0)
+    if BattlePetTooltip then
+        BattlePetTooltip:Hide()
+    end
 end

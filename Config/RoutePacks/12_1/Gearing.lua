@@ -64,6 +64,7 @@ pack.progression = {
         "wowheadMythicPlusSeason2",
         "wowheadGreatVault",
         "wowheadMistcrests",
+        "blizzardLairs",
         "wowheadLairs",
     },
     confidence = "medium",

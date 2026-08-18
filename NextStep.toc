@@ -3,7 +3,7 @@
 ## Notes: Know what matters for you next.
 ## Notes-frFR: Sachez ce qui compte pour la suite.
 ## Author: Guillaume YVES
-## Version: 0.9.0
+## Version: 0.10.0
 ## SavedVariables: NextStepDB
 ## IconTexture: Interface\Icons\INV_Misc_Map_01
 
@@ -25,6 +25,7 @@ Config\RoutePacks\12_1\Manifest.lua
 Config\RoutePacks\12_1\Catalog.lua
 Config\RoutePacks\12_1\Leveling.lua
 Config\RoutePacks\12_1\Gearing.lua
+Config\RoutePacks\12_1\Progression.lua
 Config\RoutePacks\12_1\Mounts.lua
 Config\RoutePacks\12_1\Pets.lua
 
@@ -51,6 +52,7 @@ Data\Weekly.lua
 Data\Activities.lua
 Data\CuratedRoutes.lua
 Data\PatchCatalog.lua
+Data\PatchProgress.lua
 Data\Player.lua
 
 Recommendation\Reasons.lua
@@ -68,6 +70,7 @@ UI\RecommendationList.lua
 UI\CharacterSummary.lua
 UI\CurrencyStrip.lua
 UI\VaultPanel.lua
+UI\PatchProgress.lua
 UI\CategoryRows.lua
 UI\EmptyState.lua
 UI\NextStepWidget.lua

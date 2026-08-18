@@ -82,6 +82,11 @@ function PlayerState:New()
             entries = {},
             dataReady = false,
         },
+        patchProgress = {
+            character = { current = 0, total = 0, groups = {}, dataReady = false },
+            account = { current = 0, total = 0, groups = {}, dataReady = false },
+            dataReady = false,
+        },
         capabilities = {
             character = false,
             experience = false,
@@ -93,6 +98,7 @@ function PlayerState:New()
             mythicPlus = false,
             curatedRoutes = false,
             patchCatalog = false,
+            patchProgress = false,
         },
     }
 end

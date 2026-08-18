@@ -11,6 +11,7 @@ Constants.REFRESH_DELAY = 0.2
 
 Constants.GOAL = {
     EXPERIENCE = "experience",
+    PROGRESSION = "progression",
     GEAR = "gear",
     MOUNTS = "mounts",
     PETS = "pets",
@@ -19,6 +20,7 @@ Constants.GOAL = {
 
 Constants.GOAL_ORDER = {
     "experience",
+    "progression",
     "gear",
     "mounts",
     "pets",

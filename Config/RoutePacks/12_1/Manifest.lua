@@ -6,7 +6,7 @@ NS.RoutePacks["12.1"] = {
     id = "12.1",
     patch = "12.1.0",
     interface = 120100,
-    reviewedAt = "2026-08-16",
+    reviewedAt = "2026-08-18",
     phase = "patch_12_1",
     routes = {},
     sources = {
@@ -29,6 +29,21 @@ NS.RoutePacks["12.1"] = {
             kind = "official",
             titleKey = "SOURCE_BLIZZARD_SEASON_2_SCHEDULE",
             url = "https://news.blizzard.com/en-us/article/24294369/the-shadows-deepen-midnight-season-2-begins-august-18",
+        },
+        blizzardLairs = {
+            kind = "official",
+            titleKey = "SOURCE_BLIZZARD_LAIRS",
+            url = "https://worldofwarcraft.blizzard.com/en-us/news/24295085",
+        },
+        blizzardJourneys = {
+            kind = "official",
+            titleKey = "SOURCE_BLIZZARD_JOURNEYS",
+            url = "https://worldofwarcraft.blizzard.com/en-us/news/24235746",
+        },
+        blizzardVenomousAbyss = {
+            kind = "official",
+            titleKey = "SOURCE_BLIZZARD_VENOMOUS_ABYSS",
+            url = "https://worldofwarcraft.blizzard.com/en-us/news/24294062",
         },
         wowheadMidnightAltLeveling = {
             kind = "community_guide",
