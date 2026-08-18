@@ -3,7 +3,7 @@
 ## Notes: Know what matters for you next.
 ## Notes-frFR: Sachez ce qui compte pour la suite.
 ## Author: Guillaume YVES
-## Version: 0.3.0
+## Version: 0.9.0
 ## SavedVariables: NextStepDB
 ## IconTexture: Interface\Icons\INV_Misc_Map_01
 
@@ -15,11 +15,18 @@ Util\Table.lua
 Util\Formatting.lua
 Util\SafeCall.lua
 Util\Debug.lua
+Util\RecommendationNavigation.lua
 
 Config\SeasonConfig.lua
 Config\CurrencyConfig.lua
 Config\ActivityConfig.lua
 Config\EquipmentConfig.lua
+Config\RoutePacks\12_1\Manifest.lua
+Config\RoutePacks\12_1\Catalog.lua
+Config\RoutePacks\12_1\Leveling.lua
+Config\RoutePacks\12_1\Gearing.lua
+Config\RoutePacks\12_1\Mounts.lua
+Config\RoutePacks\12_1\Pets.lua
 
 API\WoW.lua
 
@@ -38,8 +45,12 @@ Data\Leveling.lua
 Data\Currency.lua
 Data\Equipment.lua
 Data\GreatVault.lua
+Data\MythicPlus.lua
+Data\Progression.lua
 Data\Weekly.lua
 Data\Activities.lua
+Data\CuratedRoutes.lua
+Data\PatchCatalog.lua
 Data\Player.lua
 
 Recommendation\Reasons.lua
@@ -50,12 +61,15 @@ Recommendation\Engine.lua
 Planner\Planner.lua
 
 UI\Theme.lua
+UI\Tooltips.lua
 UI\Header.lua
 UI\RecommendationCard.lua
 UI\RecommendationList.lua
 UI\CharacterSummary.lua
+UI\CurrencyStrip.lua
+UI\VaultPanel.lua
+UI\CategoryRows.lua
 UI\EmptyState.lua
-UI\Onboarding.lua
 UI\NextStepWidget.lua
 UI\Settings.lua
 UI\DebugWindow.lua
