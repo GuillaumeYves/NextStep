@@ -193,8 +193,10 @@ assert(#treasureRoute.goals == 2 and treasureRoute.goals[1] == "mounts"
     "Achievement reward routes should appear under both relevant goals.")
 assert(treasureRoute.metadata.progress.current == 3 and treasureRoute.metadata.progress.total == 22,
     "Achievement progress was not attached to the route.")
-assert(treasureRoute.metadata.target.tooltipLink == "achievement:63359",
+assert(treasureRoute.metadata.target.achievementLink == "achievement:63359",
     "Curated achievement rewards should expose the native achievement tooltip.")
+assert(treasureRoute.metadata.target.itemLink == "item:275656",
+    "Achievement-backed mount routes should also preserve the reward item tooltip.")
 assert(#treasureRoute.metadata.missingCriteria == 19, "Incomplete achievement criteria were not attached.")
 assert(findRoute(routes, "12_1_pet_coiled_isle_safari"), "The Safari pet route was not selected.")
 assert(findRoute(routes, "12_1_pet_coiled_isle_safari").metadata.target.speciesID == 5132,

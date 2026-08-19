@@ -221,11 +221,12 @@ local function applyTargetMetadata(metadata, route, progress)
             or "objective",
         itemID = itemID,
         speciesID = metadata.speciesID,
+        achievementID = metadata.achievementID,
+        achievementLink = metadata.achievementLink,
         acquisition = acquisitionForEvidence(route.evidence),
         dropRate = metadata.dropRate,
         dropRateKnown = type(metadata.dropRate) == "number",
         featured = metadata.featured == true,
-        tooltipLink = metadata.achievementLink,
     }
 
     local mountEntry = itemID and progress.mounts[itemID]
@@ -233,6 +234,8 @@ local function applyTargetMetadata(metadata, route, progress)
         target.name = mountEntry.info.name
         target.iconFileID = mountEntry.info.iconFileID
         target.mountID = mountEntry.info.mountID
+        target.spellID = mountEntry.info.spellID
+        target.mountLink = mountEntry.info.mountLink
     end
 
     if target.speciesID and NS.API.WoW.GetPetSpeciesInfo then

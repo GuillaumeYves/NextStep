@@ -97,7 +97,7 @@ local function createRow(parent)
         preview:RegisterForClicks("LeftButtonUp")
         preview:SetScript("OnEnter", function(self)
             NS.UI.Theme:SetCardHovered(self, true)
-            NS.UI.Tooltips:ShowTarget(self, self.recommendation)
+            NS.UI.Tooltips:ShowTarget(self, self.recommendation, self.goalID)
         end)
         preview:SetScript("OnLeave", function(self)
             NS.UI.Theme:SetCardHovered(self, false)
@@ -141,7 +141,7 @@ local function createRow(parent)
     row.task.progress.text:SetShadowOffset(1, -1)
     row.task:SetScript("OnEnter", function(self)
         NS.UI.Theme:SetCardHovered(self, true)
-        NS.UI.Tooltips:ShowRecommendation(self, self.recommendation)
+        NS.UI.Tooltips:ShowRecommendation(self, self.recommendation, nil, self.goalID)
     end)
     row.task:SetScript("OnLeave", function(self)
         NS.UI.Theme:SetCardHovered(self, false)
@@ -157,7 +157,7 @@ local function createRow(parent)
     row.target.icon:SetPoint("BOTTOMRIGHT", -3, 3)
     row.target.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
     row.target:SetScript("OnEnter", function(self)
-        NS.UI.Tooltips:ShowTarget(self, self.recommendation)
+        NS.UI.Tooltips:ShowTarget(self, self.recommendation, self.goalID)
     end)
     row.target:SetScript("OnLeave", function()
         NS.UI.Tooltips:Hide()
@@ -226,6 +226,7 @@ updateRow = function(row, category, index)
         preview.scroll = row.scroll
         preview.taskIndex = taskIndex
         preview.recommendation = previewTask
+        preview.goalID = category.id
         preview.isCurrent = taskIndex == index
         preview.goalColor = goalColor
         if previewTask then
@@ -250,7 +251,9 @@ updateRow = function(row, category, index)
 
     local task = tasks[index]
     row.task.recommendation = task
+    row.task.goalID = category.id
     row.target.recommendation = task
+    row.target.goalID = category.id
     if task then
         local metadata = task.metadata or {}
         local target = metadata.target or {}

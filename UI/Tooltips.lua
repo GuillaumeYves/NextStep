@@ -45,17 +45,58 @@ local function targetCanPreview(target)
     )
 end
 
-local function targetTooltipLink(target)
+local function hasLink(value)
+    return type(value) == "string" and value ~= ""
+end
+
+local function setHyperlink(link)
+    if not hasLink(link) then
+        return false
+    end
+    return pcall(GameTooltip.SetHyperlink, GameTooltip, link)
+end
+
+local function setAchievement(achievementID, achievementLink)
+    if type(achievementID) == "number" and type(GameTooltip.SetAchievementByID) == "function" then
+        local ok = pcall(GameTooltip.SetAchievementByID, GameTooltip, achievementID)
+        if ok then
+            return true
+        end
+    end
+    return setHyperlink(achievementLink)
+end
+
+local function setItem(itemID, itemLink)
+    if setHyperlink(itemLink) then
+        return true
+    end
+    if type(itemID) == "number" and type(GameTooltip.SetItemByID) == "function" then
+        return pcall(GameTooltip.SetItemByID, GameTooltip, itemID)
+    end
+    return false
+end
+
+local function setNativeTargetTooltip(owner, target, anchor, preferredGoal)
     if type(target) ~= "table" then
-        return nil
+        return false
     end
-    if type(target.tooltipLink) == "string" and target.tooltipLink ~= "" then
-        return target.tooltipLink
+    GameTooltip:SetOwner(owner, anchor or "ANCHOR_RIGHT")
+
+    local achievementPreferred = preferredGoal == NS.Constants.GOAL.ACHIEVEMENTS
+        or target.kind == "achievement"
+    if achievementPreferred and setAchievement(target.achievementID, target.achievementLink) then
+        return true
     end
-    if type(target.itemLink) == "string" and target.itemLink ~= "" then
-        return target.itemLink
+    if setItem(target.itemID, target.itemLink) then
+        return true
     end
-    return nil
+    if setHyperlink(target.mountLink) then
+        return true
+    end
+    if setAchievement(target.achievementID, target.achievementLink) then
+        return true
+    end
+    return false
 end
 
 local function addPreviewHint(target)
@@ -65,20 +106,18 @@ local function addPreviewHint(target)
     end
 end
 
-function Tooltips:ShowRecommendation(owner, recommendation, anchor)
+function Tooltips:ShowRecommendation(owner, recommendation, anchor, preferredGoal)
     if not recommendation then
         return
     end
     local metadata = recommendation.metadata or {}
     local target = metadata.target or {}
-    GameTooltip:SetOwner(owner, anchor or "ANCHOR_RIGHT")
     GameTooltip:SetMinimumWidth(360)
-    local tooltipLink = targetTooltipLink(target)
-    if tooltipLink then
-        GameTooltip:SetHyperlink(tooltipLink)
+    if setNativeTargetTooltip(owner, target, anchor, preferredGoal) then
         addSpacer()
         addHeading(recommendation.title or NS.L.ADDON_NAME)
     else
+        GameTooltip:SetOwner(owner, anchor or "ANCHOR_RIGHT")
         GameTooltip:SetText(recommendation.title or NS.L.ADDON_NAME)
     end
     if recommendation.description then
@@ -167,16 +206,13 @@ function Tooltips:ShowRecommendation(owner, recommendation, anchor)
     GameTooltip:Show()
 end
 
-function Tooltips:ShowTarget(owner, recommendation)
+function Tooltips:ShowTarget(owner, recommendation, preferredGoal)
     local target = recommendation and recommendation.metadata and recommendation.metadata.target
     if not target then
-        self:ShowRecommendation(owner, recommendation)
+        self:ShowRecommendation(owner, recommendation, nil, preferredGoal)
         return
     end
-    local tooltipLink = targetTooltipLink(target)
-    if tooltipLink then
-        GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
-        GameTooltip:SetHyperlink(tooltipLink)
+    if setNativeTargetTooltip(owner, target, "ANCHOR_RIGHT", preferredGoal) then
         addSpacer()
         addHeading(NS.L.TASK_TOOLTIP_ACQUISITION)
         GameTooltip:AddLine(
@@ -195,7 +231,7 @@ function Tooltips:ShowTarget(owner, recommendation)
         GameTooltip:Show()
         return
     end
-    self:ShowRecommendation(owner, recommendation)
+    self:ShowRecommendation(owner, recommendation, nil, preferredGoal)
 end
 
 function Tooltips:ShowPatchProgress(owner, progress, title)

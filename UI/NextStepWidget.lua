@@ -142,7 +142,7 @@ function NextStepWidget:Create()
     frame.details:SetPoint("TOPRIGHT", -14, -97)
     frame.details:SetText("?")
     frame.details:SetScript("OnEnter", function(self)
-        NS.UI.Tooltips:ShowRecommendation(self, self.recommendation)
+        NS.UI.Tooltips:ShowRecommendation(self, self.recommendation, nil, self.goalID)
     end)
     frame.details:SetScript("OnLeave", function()
         NS.UI.Tooltips:Hide()
@@ -191,6 +191,7 @@ function NextStepWidget:Render()
 
     local recommendation = tasks[index]
     frame.details.recommendation = recommendation
+    frame.details.goalID = self.selectedCategoryID
     frame.details:SetShown(recommendation ~= nil)
     if recommendation then
         frame.title:SetText(recommendation.title or "")

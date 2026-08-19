@@ -6,7 +6,7 @@ NS.RoutePacks["12.1"] = {
     id = "12.1",
     patch = "12.1.0",
     interface = 120100,
-    reviewedAt = "2026-08-18",
+    reviewedAt = "2026-08-19",
     phase = "patch_12_1",
     routes = {},
     sources = {
@@ -154,6 +154,16 @@ NS.RoutePacks["12.1"] = {
             kind = "database",
             titleKey = "SOURCE_WOWHEAD_PATCH_MOUNT_CATALOG",
             url = "https://www.wowhead.com/ptr/mount-spells?filter=21;3;120100",
+        },
+        wagoMountItemRelationships = {
+            kind = "client_data",
+            titleKey = "SOURCE_WAGO_MOUNT_ITEM_RELATIONSHIPS",
+            url = "https://wago.tools/db2/ItemXItemEffect",
+        },
+        wagoMountItemEffects = {
+            kind = "client_data",
+            titleKey = "SOURCE_WAGO_MOUNT_ITEM_EFFECTS",
+            url = "https://wago.tools/db2/ItemEffect",
         },
         wowheadPatchPetCatalog = {
             kind = "database",

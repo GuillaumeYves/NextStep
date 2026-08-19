@@ -11,6 +11,7 @@ local INVALIDATING_REASONS = {
     PET_JOURNAL_LIST_UPDATE = true,
     ACHIEVEMENT_EARNED = true,
     CRITERIA_UPDATE = true,
+    GET_ITEM_INFO_RECEIVED = true,
     manual = true,
     window_opened = true,
     settings_reset = true,
@@ -23,19 +24,21 @@ local function releaseStatus(isSeasonEntry, state)
     return "new"
 end
 
-local function sourceMetadata(pack, sourceID)
-    local source = pack.sources and pack.sources[sourceID]
-    if not source then
-        return {}
+local function sourceMetadata(pack, ...)
+    local sources = {}
+    for index = 1, select("#", ...) do
+        local sourceID = select(index, ...)
+        local source = sourceID and pack.sources and pack.sources[sourceID]
+        if source then
+            sources[#sources + 1] = {
+                id = sourceID,
+                kind = source.kind,
+                title = NS.L[source.titleKey] or sourceID,
+                url = source.url,
+            }
+        end
     end
-    return {
-        {
-            id = sourceID,
-            kind = source.kind,
-            title = NS.L[source.titleKey] or sourceID,
-            url = source.url,
-        },
-    }
+    return sources
 end
 
 function PatchCatalog:Collect(state, reason)
@@ -62,11 +65,16 @@ function PatchCatalog:Collect(state, reason)
     }
     for _, spellID in ipairs(catalog.mounts or {}) do
         local info, known = NS.API.WoW:GetMountCollectionInfoBySpellID(spellID)
+        local itemID = catalog.mountItems and catalog.mountItems[spellID]
         if known and info and not info.hiddenOnCharacter then
             completion.mounts.total = completion.mounts.total + 1
             if info.collected then
                 completion.mounts.current = completion.mounts.current + 1
             else
+                local itemInfo
+                if itemID and NS.API.WoW.GetItemDisplayInfo then
+                    itemInfo = NS.API.WoW:GetItemDisplayInfo(itemID)
+                end
                 entries[#entries + 1] = {
                     id = "12_1_catalog_mount_" .. spellID,
                     goal = NS.Constants.GOAL.MOUNTS,
@@ -80,15 +88,22 @@ function PatchCatalog:Collect(state, reason)
                     releaseStatus = releaseStatus(catalog.seasonMounts[spellID], state),
                     target = {
                         kind = "mount",
+                        itemID = itemID,
                         mountID = info.mountID,
                         spellID = info.spellID,
-                        itemLink = info.mountLink,
+                        itemLink = itemInfo and itemInfo.itemLink or nil,
+                        mountLink = info.mountLink,
                         iconFileID = info.iconFileID,
                         name = info.name,
                         releaseStatus = releaseStatus(catalog.seasonMounts[spellID], state),
                         acquisition = "client_confirmed",
                     },
-                    sources = sourceMetadata(pack, "wowheadPatchMountCatalog"),
+                    sources = sourceMetadata(
+                        pack,
+                        "wowheadPatchMountCatalog",
+                        itemID and "wagoMountItemRelationships" or nil,
+                        itemID and "wagoMountItemEffects" or nil
+                    ),
                 }
             end
         end
@@ -161,7 +176,7 @@ function PatchCatalog:Collect(state, reason)
                     target = {
                         kind = "achievement",
                         achievementID = achievementID,
-                        tooltipLink = info.achievementLink,
+                        achievementLink = info.achievementLink,
                         iconFileID = info.iconFileID,
                         name = info.name,
                         releaseStatus = status,

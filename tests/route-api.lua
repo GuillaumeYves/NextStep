@@ -248,6 +248,8 @@ assert(questKnown == true and questCompleted == true, "Quest completion was not 
 local mount, mountKnown = NS.API.WoW:GetMountCollectionInfoByItemID(246731)
 assert(mountKnown == true and mount.collected == true, "Mount ownership was not normalized.")
 assert(mount.mountID == 777 and mount.iconFileID == 1002, "Mount metadata was not normalized.")
+assert(mount.itemID == 246731 and mount.mountLink == "mount:1001",
+    "Item-backed mounts should retain both reward and Mount Journal identities.")
 
 local spellMount, spellMountKnown = NS.API.WoW:GetMountCollectionInfoBySpellID(1001)
 assert(spellMountKnown == true and spellMount.sourceText == "Drop: Test Boss",
