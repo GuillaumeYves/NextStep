@@ -4,6 +4,13 @@ NS.UI = NS.UI or {}
 local VaultPanel = {}
 NS.UI.VaultPanel = VaultPanel
 
+VaultPanel.LAYOUT = {
+    rowTop = 8,
+    rowHeight = 108,
+    rowGap = 8,
+    dividerHeight = 4,
+}
+
 local TYPE_ORDER = { "raid", "dungeon", "world" }
 local CATEGORY_ATLASES = {
     raid = "evergreen-weeklyrewards-category-raids",
@@ -80,10 +87,15 @@ local function createSlot(parent)
 end
 
 local function createRow(parent, index)
+    local layout = VaultPanel.LAYOUT
     local row = CreateFrame("Frame", nil, parent)
-    row:SetPoint("TOPLEFT", 27, -8 - ((index - 1) * 116))
+    row:SetPoint(
+        "TOPLEFT",
+        27,
+        -layout.rowTop - ((index - 1) * (layout.rowHeight + layout.rowGap))
+    )
     row:SetPoint("RIGHT", -27, 0)
-    row:SetHeight(108)
+    row:SetHeight(layout.rowHeight)
 
     row.category = CreateFrame("Frame", nil, row)
     row.category:SetSize(210, 108)
@@ -108,6 +120,16 @@ local function createRow(parent, index)
     return row
 end
 
+function VaultPanel:GetDividerOffset(index)
+    local layout = self.LAYOUT
+    return -(
+        layout.rowTop
+        + layout.rowHeight
+        + (layout.rowGap / 2)
+        + ((index - 1) * (layout.rowHeight + layout.rowGap))
+    )
+end
+
 function VaultPanel:Create(parent)
     local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
     frame:SetHeight(356)
@@ -125,9 +147,10 @@ function VaultPanel:Create(parent)
     for dividerIndex = 1, 2 do
         local divider = frame:CreateTexture(nil, "ARTWORK")
         divider:SetAtlas("evergreen-weeklyrewards-divider", false)
-        divider:SetPoint("TOPLEFT", frame, "TOPLEFT", 27, -120 - ((dividerIndex - 1) * 116))
-        divider:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -27, -120 - ((dividerIndex - 1) * 116))
-        divider:SetHeight(8)
+        local offset = self:GetDividerOffset(dividerIndex)
+        divider:SetPoint("LEFT", frame, "TOPLEFT", 27, offset)
+        divider:SetPoint("RIGHT", frame, "TOPRIGHT", -27, offset)
+        divider:SetHeight(self.LAYOUT.dividerHeight)
         frame.dividers[dividerIndex] = divider
     end
 

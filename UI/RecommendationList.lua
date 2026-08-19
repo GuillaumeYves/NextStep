@@ -22,15 +22,15 @@ function RecommendationList:Create(parent)
         content:SetWidth(width)
     end)
     scroll:SetScript("OnMouseWheel", function(self, delta)
-        local maximum = math.max(0, content:GetHeight() - self:GetHeight())
         local target = self:GetVerticalScroll() - (delta * 42)
-        self:SetVerticalScroll(math.max(0, math.min(maximum, target)))
+        NS.Util.Scroll:RestoreOffset(self, target, content:GetHeight())
     end)
 
     return scroll
 end
 
 function RecommendationList:Update(scroll, recommendations)
+    local previousOffset = scroll:GetVerticalScroll()
     local count = #recommendations
     for index, recommendation in ipairs(recommendations) do
         local card = scroll.cards[index]
@@ -50,6 +50,6 @@ function RecommendationList:Update(scroll, recommendations)
 
     local contentHeight = math.max(1, count * CARD_HEIGHT + math.max(0, count - 1) * CARD_GAP)
     scroll.content:SetHeight(contentHeight)
-    scroll:SetVerticalScroll(0)
+    NS.Util.Scroll:RestoreOffset(scroll, previousOffset, contentHeight)
     scroll:SetShown(count > 0)
 end

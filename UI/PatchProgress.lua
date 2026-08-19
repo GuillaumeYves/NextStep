@@ -6,9 +6,8 @@ NS.UI.PatchProgress = PatchProgress
 
 local function createBar(parent)
     local bar = CreateFrame("StatusBar", nil, parent, "BackdropTemplate")
-    bar:SetHeight(16)
-    bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
-    NS.UI.Theme:ApplyCard(bar)
+    bar:SetHeight(15)
+    NS.UI.Theme:ApplyProgressBar(bar)
     bar.label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     bar.label:SetJustifyH("LEFT")
     bar.value = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -35,8 +34,6 @@ local function updateBar(bar, progress, label, tooltipTitle)
     bar:SetValue(math.min(current, total))
     local color = NS.UI.Theme:GetProgressColor(current, total)
     bar:SetStatusBarColor(color[1], color[2], color[3], 1)
-    bar:SetBackdropBorderColor(color[1], color[2], color[3], 1)
-    bar:SetBackdropColor(color[1] * 0.16, color[2] * 0.16, color[3] * 0.16, 0.95)
     if total > 0 then
         bar.value:SetText(string.format(
             NS.L.PATCH_PROGRESS_PERCENT,

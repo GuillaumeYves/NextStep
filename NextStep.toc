@@ -13,6 +13,7 @@ Core\Config.lua
 
 Util\Table.lua
 Util\Formatting.lua
+Util\Scroll.lua
 Util\SafeCall.lua
 Util\Debug.lua
 Util\RecommendationNavigation.lua

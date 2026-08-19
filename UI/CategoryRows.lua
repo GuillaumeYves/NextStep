@@ -62,10 +62,11 @@ local function createRow(parent)
     row:SetHeight(ROW_HEIGHT)
 
     row.divider = row:CreateTexture(nil, "ARTWORK")
-    row.divider:SetPoint("BOTTOMLEFT", 4, 0)
-    row.divider:SetPoint("BOTTOMRIGHT", -4, 0)
-    row.divider:SetHeight(1)
-    row.divider:SetColorTexture(0.35, 0.27, 0.14, 0.7)
+    row.divider:SetAtlas("evergreen-weeklyrewards-divider", false)
+    row.divider:SetPoint("LEFT", row, "BOTTOMLEFT", 4, -(ROW_GAP / 2))
+    row.divider:SetPoint("RIGHT", row, "BOTTOMRIGHT", -4, -(ROW_GAP / 2))
+    row.divider:SetHeight(4)
+    row.divider:SetAlpha(0.72)
 
     row.categoryIconBorder = CreateFrame("Frame", nil, row, "BackdropTemplate")
     row.categoryIconBorder:SetSize(38, 38)
@@ -133,9 +134,8 @@ local function createRow(parent)
     row.task.progress = CreateFrame("StatusBar", nil, row.task, "BackdropTemplate")
     row.task.progress:SetPoint("BOTTOMLEFT", 6, 5)
     row.task.progress:SetPoint("BOTTOMRIGHT", -6, 5)
-    row.task.progress:SetHeight(12)
-    row.task.progress:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
-    NS.UI.Theme:ApplyCard(row.task.progress)
+    row.task.progress:SetHeight(15)
+    NS.UI.Theme:ApplyProgressBar(row.task.progress)
     row.task.progress.text = row.task.progress:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     row.task.progress.text:SetPoint("CENTER", 0, 0)
     row.task.progress.text:SetShadowOffset(1, -1)
@@ -272,18 +272,6 @@ updateRow = function(row, category, index)
                 progressColor[3],
                 1
             )
-            row.task.progress:SetBackdropBorderColor(
-                progressColor[1],
-                progressColor[2],
-                progressColor[3],
-                1
-            )
-            row.task.progress:SetBackdropColor(
-                progressColor[1] * 0.16,
-                progressColor[2] * 0.16,
-                progressColor[3] * 0.16,
-                0.95
-            )
             row.task.progress.text:SetText(string.format(
                 NS.L.TASK_PROGRESS_BAR_FORMAT,
                 progress.current,
@@ -353,14 +341,15 @@ function CategoryRows:Create(parent)
         scroll.ScrollBar:SetPoint("BOTTOMRIGHT", scroll, "BOTTOMRIGHT", -3, 18)
     end
     scroll:SetScript("OnMouseWheel", function(self, delta)
-        local maximum = math.max(0, content:GetHeight() - self:GetHeight())
-        self:SetVerticalScroll(math.max(0, math.min(maximum, self:GetVerticalScroll() - delta * 52)))
+        local target = self:GetVerticalScroll() - delta * 52
+        NS.Util.Scroll:RestoreOffset(self, target, content:GetHeight())
     end)
     return scroll
 end
 
 function CategoryRows:Update(scroll, categories)
     categories = categories or {}
+    local previousOffset = scroll:GetVerticalScroll()
     for index, category in ipairs(categories) do
         local row = scroll.rows[index]
         if not row then
@@ -392,6 +381,7 @@ function CategoryRows:Update(scroll, categories)
     for index = #categories + 1, #scroll.rows do
         scroll.rows[index]:Hide()
     end
-    scroll.content:SetHeight(math.max(1, #categories * ROW_HEIGHT + math.max(0, #categories - 1) * ROW_GAP))
-    scroll:SetVerticalScroll(0)
+    local contentHeight = math.max(1, #categories * ROW_HEIGHT + math.max(0, #categories - 1) * ROW_GAP)
+    scroll.content:SetHeight(contentHeight)
+    NS.Util.Scroll:RestoreOffset(scroll, previousOffset, contentHeight)
 end
