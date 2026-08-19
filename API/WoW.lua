@@ -370,17 +370,25 @@ function WoW:GetMountCollectionInfoByItemID(itemID)
         return nil, false
     end
 
-    local infoOK, name, _, icon, _, _, _, _, _, _, _, isCollected =
+    local infoOK, name, spellID, icon, _, _, _, _, _, _, _, isCollected =
         SafeCall:Invoke(C_MountJournal.GetMountInfoByID, mountID)
     if not infoOK or type(isCollected) ~= "boolean" then
         return nil, false
     end
 
+    local mountLink
+    if type(spellID) == "number" and C_MountJournal.GetMountLink then
+        local linkOK, link = SafeCall:Invoke(C_MountJournal.GetMountLink, spellID)
+        mountLink = linkOK and link or nil
+    end
+
     return {
         itemID = itemID,
+        spellID = spellID,
         mountID = mountID,
         name = name,
         iconFileID = icon,
+        mountLink = mountLink,
         collected = isCollected,
     }, true
 end

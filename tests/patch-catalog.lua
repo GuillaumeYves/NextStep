@@ -23,7 +23,17 @@ function NS.API.WoW:GetMountCollectionInfoBySpellID(spellID)
         name = "Mount " .. spellID,
         iconFileID = 1,
         sourceText = "Mount source",
+        mountLink = "mount:" .. spellID,
         collected = spellID == 1261369,
+    }, true
+end
+
+local itemDisplayCalls = 0
+function NS.API.WoW:GetItemDisplayInfo(itemID)
+    itemDisplayCalls = itemDisplayCalls + 1
+    return {
+        itemID = itemID,
+        itemLink = "item:" .. itemID,
     }, true
 end
 
@@ -62,9 +72,28 @@ loadAddonFile("Config/RoutePacks/12_1/Manifest.lua")
 loadAddonFile("Config/RoutePacks/12_1/Catalog.lua")
 loadAddonFile("Data/PatchCatalog.lua")
 
+local packCatalog = NS.RoutePacks["12.1"].catalog
+local mountsWithoutRewardItems = {}
+for _, spellID in ipairs(packCatalog.mounts) do
+    if not packCatalog.mountItems[spellID] then
+        mountsWithoutRewardItems[#mountsWithoutRewardItems + 1] = spellID
+    end
+end
+assert(#mountsWithoutRewardItems == 2
+    and mountsWithoutRewardItems[1] == 1261369
+    and mountsWithoutRewardItems[2] == 1295958,
+    "Every item-backed catalog mount should have a verified reward item mapping.")
+
 local state = { progression = { seasonPhase = "preseason" } }
 local catalog, ready = NS.Data.PatchCatalog:Collect(state)
 assert(ready == true and catalog.dataReady == true, "Patch catalog should be ready.")
+local callsAfterInitialScan = itemDisplayCalls
+NS.Data.PatchCatalog:Collect(state, "CURRENCY_DISPLAY_UPDATE")
+assert(itemDisplayCalls == callsAfterInitialScan,
+    "Unrelated refreshes should reuse cached collection target data.")
+NS.Data.PatchCatalog:Collect(state, "GET_ITEM_INFO_RECEIVED")
+assert(itemDisplayCalls > callsAfterInitialScan,
+    "Loaded item data should refresh catalog reward links.")
 assert(#catalog.entries > 200, "The public 12.1 catalog should include all supported collections.")
 
 local foundUpcoming
@@ -83,10 +112,15 @@ assert(catalog.completion.account.current == 3,
 assert(catalog.completion.account.total == 249,
     "Account progress should use every known, obtainable 12.1 catalog entry.")
 for _, entry in ipairs(catalog.entries) do
+    if entry.id == "12_1_catalog_mount_1296734" then
+        assert(entry.target.itemID == 275442 and entry.target.itemLink == "item:275442",
+            "Mount catalog targets should preserve their reward item tooltip.")
+        assert(entry.target.mountLink == "mount:1296734",
+            "Mount catalog targets should retain the Mount Journal fallback.")
+    end
     if entry.kind == "achievement" then
-        assert(entry.target.tooltipLink == "achievement:" .. entry.achievementID,
+        assert(entry.target.achievementLink == "achievement:" .. entry.achievementID,
             "Achievement targets should preserve their native tooltip link.")
-        break
     end
 end
 

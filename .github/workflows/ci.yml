@@ -53,6 +53,9 @@ jobs:
       - name: Test curated route API wrappers
         run: lua5.1 tests/route-api.lua
 
+      - name: Test native tooltip routing
+        run: lua5.1 tests/tooltips.lua
+
       - name: Test patch collection catalog
         run: lua5.1 tests/patch-catalog.lua
 

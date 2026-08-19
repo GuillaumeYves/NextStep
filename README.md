@@ -38,7 +38,7 @@ The first production milestone provides:
 - Multiple concrete routes per supported category, visible ordered steps, target reward icons, acquisition labels, and bounded carousel navigation
 - Fixed character and account completion bars below the season status, with detailed hover counts
 - Red, orange, yellow, and green completion bars that become greener as tracked work approaches completion
-- Native client item, mount, and achievement hovers plus client collection details on target tiles and task cards
+- Native reward-item hovers for item-backed mounts and gear, native achievement hovers in the achievement category, and Mount Journal fallback hovers when no reward item exists
 - Optional incomplete 4-piece class-set guidance when equipped set detection is reliable
 - A movable settings window with a saved position
 - Structured state and rule diagnostics
@@ -102,7 +102,7 @@ NextStep combines dynamic character state from Blizzard APIs with curated patch 
 
 Claims such as fastest route, best farm, or best upgrade path require direct and current evidence. When that evidence is unavailable, NextStep uses precise neutral wording or omits the recommendation.
 
-The 12.1 pack was reviewed on 2026-08-18 and currently contains:
+The 12.1 pack was reviewed on 2026-08-19 and currently contains:
 
 - Blizzard's current progression path through Exile's Reach, Dragonflight, The War Within, and Midnight
 - A community-optimized Midnight alt route using one-time Delver's Calls, zone quests, and optional first-time profession crafts
@@ -130,7 +130,7 @@ At the 2026-08-18 review point, Season 2 activates with the August 18 Americas r
 
 Present-tense pre-season guidance is capped at item level 298. This is a conservative local ceiling based on the current live reward state, not a claim that Blizzard published a universal 298 cap. Vault item levels still come from the client's preview links. During pre-season, those values are labeled as next-reset previews and are never presented as rewards already available this week.
 
-Supported target routes carry a reward icon, item link when cached, acquisition type, evidence, and optional documented drop rate. Guaranteed quest, treasure, and achievement rewards are labeled clearly. Chance rewards show a percentage only when a current reliable source publishes one. The Writhing Brood currently has no defensible published rate, so NextStep says that the rate is unavailable.
+Supported target routes carry a reward icon, typed native target data, acquisition type, evidence, and optional documented drop rate. Item-backed mounts carry both their verified reward item ID and their Mount Journal identity. Item tooltips can load directly from the item ID before the full item link is cached. Guaranteed quest, treasure, and achievement rewards are labeled clearly. Chance rewards show a percentage only when a current reliable source publishes one. The Writhing Brood currently has no defensible published rate, so NextStep says that the rate is unavailable.
 
 The alt leveling route is marked with medium confidence because it is a community optimization and results vary. Other included routes use official progression guidance or documented reward records. Hover any task to see its reason, progress, route steps, and evidence. Vault slots expose progress and the exact client preview in the same way.
 
@@ -160,7 +160,7 @@ Document the source and season beside each added ID.
 
 ## Development status
 
-Version 0.9.0 moves the main plan onto Blizzard's portrait panel structure, shows the lowest equipped slot, removes preference filtering, adds bounded task controls, and supports Ctrl-click previews for item, mount, and battle pet targets. It also adds precise pre-season Mythic 0 and World Lair steps plus optional class-set progress. These changes require manual in-game validation.
+Version 0.10.0 adds concrete multi-step 12.1 routes, fixed character and account completion bars, visible threshold colors, and typed native hovers for item, mount, and achievement targets. These changes require manual in-game validation.
 
 ## Known limitations
 
@@ -215,13 +215,15 @@ lua5.1 tests/recommendation-navigation.lua
 lua5.1 tests/leveling-dungeons.lua
 lua5.1 tests/curated-routes.lua
 lua5.1 tests/route-api.lua
+lua5.1 tests/tooltips.lua
 lua5.1 tests/patch-catalog.lua
+lua5.1 tests/patch-progress.lua
 lua5.1 tests/progression-analysis.lua
 ```
 
 ## API review
 
-Reviewed against the extracted live 12.1.0 Blizzard UI source and generated API documentation on 2026-08-16.
+Reviewed against the extracted live 12.1.0 Blizzard UI source and generated API documentation on 2026-08-19.
 
 | API | Used in | Verification | Caveats | Event dependencies |
 | --- | --- | --- | --- | --- |
@@ -243,11 +245,12 @@ Reviewed against the extracted live 12.1.0 Blizzard UI source and generated API 
 | `C_QuestLog.IsQuestFlaggedCompleted` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, generated Quest Log docs | Unknown API state suppresses routes that require historical quest completion | `QUEST_LOG_UPDATE`, `QUEST_TURNED_IN` |
 | `C_LFGInfo.CanPlayerUseLFD`, `GetLevelUpInstances`, `GetDungeonInfo` | `API/WoW.lua` | Confident, generated LFGInfo docs | Returns localized available choices and metadata, not speed or reward ranking | `UNIT_LEVEL`, `PLAYER_ENTERING_WORLD`, `LFG_UPDATE_RANDOM_INFO` |
 | `C_MountJournal.GetMountFromItem`, `GetMountInfoByID` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, generated Mount Journal docs | A missing item mapping or unavailable collection result suppresses the route | `NEW_MOUNT_ADDED`, `PLAYER_ENTERING_WORLD` |
-| `C_MountJournal.GetMountFromSpell`, `GetMountInfoExtraByID`, `GetMountLink` | `API/WoW.lua`, `Data/PatchCatalog.lua` | Confident, current generated Mount Journal docs | Client source text can be broad for promotions or entries not currently obtainable; hidden character-specific entries are suppressed | `NEW_MOUNT_ADDED`, `PLAYER_ENTERING_WORLD` |
+| `C_MountJournal.GetMountFromSpell`, `GetMountInfoExtraByID`, `GetMountLink` | `API/WoW.lua`, `Data/PatchCatalog.lua` | Confident, current generated Mount Journal docs | `GetMountLink` returns a mount-display link, so it is retained only as a fallback when no verified reward item exists | `NEW_MOUNT_ADDED`, `PLAYER_ENTERING_WORLD` |
 | `C_PetJournal.GetNumPetsInJournal` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, generated Pet Journal docs | Uses the documented creature ID count and suppresses the route when unavailable | `PET_JOURNAL_LIST_UPDATE`, `PLAYER_ENTERING_WORLD` |
 | `C_PetJournal.GetPetInfoBySpeciesID` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, used by Blizzard live Pet Collection UI | Name and icon can be unavailable while collection data loads | `PET_JOURNAL_LIST_UPDATE`, `PLAYER_ENTERING_WORLD` |
 | `C_PetJournal.GetNumCollectedInfo` | `API/WoW.lua`, `Data/PatchCatalog.lua` | Confident, current generated Pet Journal docs | Collection count is character-account journal state; entries marked unobtainable by the client are suppressed | `PET_JOURNAL_LIST_UPDATE`, `PLAYER_ENTERING_WORLD` |
-| `GetAchievementInfo`, `GetAchievementNumCriteria`, `GetAchievementCriteriaInfo` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, current global API and Blizzard live Achievement UI usage | Achievement completion can be account-wide; unavailable criteria suppress the dependent route | `ACHIEVEMENT_EARNED`, `CRITERIA_UPDATE`, `PLAYER_ENTERING_WORLD` |
+| `GetAchievementInfo`, `GetAchievementNumCriteria`, `GetAchievementCriteriaInfo`, `GetAchievementLink` | `API/WoW.lua`, `Data/CuratedRoutes.lua` | Confident, current global API and Blizzard live Achievement UI usage | Achievement completion can be account-wide; unavailable criteria suppress the dependent route | `ACHIEVEMENT_EARNED`, `CRITERIA_UPDATE`, `PLAYER_ENTERING_WORLD` |
+| `GameTooltip:SetAchievementByID`, `SetItemByID`, `SetHyperlink` | `UI/Tooltips.lua` | Confident, current GameTooltip widget methods and Blizzard live UI usage | Typed IDs are preferred; full hyperlinks remain safe fallbacks when the specialized method is unavailable | User hover |
 | `GetInventoryItemID` | `API/WoW.lua` | Confident, used throughout Blizzard live equipment UI | Off-hand is excluded because two-handed weapons make an empty off-hand valid | `PLAYER_EQUIPMENT_CHANGED` |
 | `GetInventoryItemLink`, `C_Item.GetDetailedItemLevelInfo` | `API/WoW.lua`, `Data/Equipment.lua`, `Data/GreatVault.lua` | Confident, used by Blizzard live equipment and Weekly Rewards UI | Item data can be temporarily uncached | `PLAYER_EQUIPMENT_CHANGED`, `GET_ITEM_INFO_RECEIVED` |
 | `C_Item.GetItemInfo`, `C_Item.GetItemUpgradeInfo` | `API/WoW.lua`, `Data/Equipment.lua`, `Data/CuratedRoutes.lua`, `Data/GreatVault.lua` | Confident, generated Item docs and Blizzard Weekly Rewards usage | Names, links, and icons can be absent until item data is cached. Upgrade information can be absent outside the current upgrade system | `PLAYER_EQUIPMENT_CHANGED`, `GET_ITEM_INFO_RECEIVED` |
@@ -308,6 +311,8 @@ Primary review sources:
 - [Wowhead Coiled Isle Safari achievement](https://www.wowhead.com/achievement=62492/the-coiled-isle-safari)
 - [Wowhead Altar of Fangs reward guide](https://www.wowhead.com/guide/midnight/altar-of-fangs-dungeon-overview-location-rewards)
 - [Wowhead public 12.1 mount database snapshot](https://www.wowhead.com/ptr/mount-spells?filter=21;3;120100)
+- [Retail ItemEffect table](https://wago.tools/db2/ItemEffect)
+- [Retail ItemXItemEffect relationship table](https://wago.tools/db2/ItemXItemEffect)
 - [Wowhead public 12.1 pet database snapshot](https://www.wowhead.com/ptr/battle-pets?filter=3;3;120100)
 - [Wowhead public 12.1 achievement database snapshot](https://www.wowhead.com/ptr/achievements?filter=17;3;120100)
 - [Wowhead Ral'kala reward research](https://www.wowhead.com/news/defeat-ralkala-fifty-times-to-earn-special-prey-achievement-in-patch-12-1-382164)

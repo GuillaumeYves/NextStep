@@ -2,7 +2,7 @@
 
 All notable changes to NextStep are documented here.
 
-## 0.10.0 - 2026-08-18
+## 0.10.0 - 2026-08-19
 
 ### Added
 
@@ -12,7 +12,7 @@ All notable changes to NextStep are documented here.
 - Character-gated Legacy of the Amani, Coiled Isle, Vaults of Atal'Utek, Tokka reputation, and 12.1 Delve routes
 - Fixed character and account completion bars below the season status
 - Red, orange, yellow, and green completion states on visible progress bars
-- Native item, mount, and achievement links plus client collection details on route hover targets
+- Typed native reward-item and achievement tooltips, with Mount Journal fallback only when no reward item exists
 - A Season-gated Venomous Abyss access and reward route under Gear
 - Explicit coverage metadata and tests for campaign, weekly, Delve and outdoor, gear, raid, guaranteed or achievement collections, and chance collections
 
