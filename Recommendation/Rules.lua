@@ -506,6 +506,68 @@ function Rules:FastGearRoute(state)
                 }
                 icon = "Interface\\Icons\\INV_Misc_Chest_03"
                 route.rewardText = NS.L.GEAR_ROUTE_WORLD_LAIR_REWARD
+            elseif route.kind == "crafted_gear" then
+                local item = route.item or {}
+                local slotName = equipmentSlotName(item)
+                local currencyName = route.currency and route.currency.name or NS.L.UNKNOWN
+                title = string.format(NS.L.GEAR_ROUTE_CRAFTED_TITLE, slotName)
+                if route.currencyGap > 0 then
+                    description = string.format(
+                        NS.L.GEAR_ROUTE_CRAFTED_GAP_DESCRIPTION,
+                        route.currencyGap,
+                        currencyName,
+                        route.minItemLevel,
+                        route.maxItemLevel
+                    )
+                else
+                    description = string.format(
+                        NS.L.GEAR_ROUTE_CRAFTED_READY_DESCRIPTION,
+                        route.currencyCost,
+                        currencyName,
+                        route.minItemLevel,
+                        route.maxItemLevel
+                    )
+                end
+                reason = string.format(
+                    NS.L.GEAR_ROUTE_CRAFTED_REASON,
+                    item.name or slotName,
+                    item.itemLevel or 0
+                )
+                route.steps = {
+                    string.format(NS.L.GEAR_ROUTE_CRAFTED_STEP_1, slotName, item.itemLevel or 0),
+                    string.format(
+                        NS.L.GEAR_ROUTE_CRAFTED_STEP_2,
+                        route.currencyCost,
+                        currencyName
+                    ),
+                    string.format(
+                        NS.L.GEAR_ROUTE_CRAFTED_STEP_3,
+                        route.minItemLevel,
+                        route.maxItemLevel
+                    ),
+                }
+                icon = item.iconFileID or icon
+                route.targetItem = item
+            elseif route.kind == "season_lair" then
+                local difficulty = NS.L.LAIR_DIFFICULTY_NAMES[route.difficulty] or route.difficulty
+                title = string.format(NS.L.GEAR_ROUTE_SEASON_LAIR_TITLE, difficulty)
+                description = string.format(
+                    NS.L.GEAR_ROUTE_SEASON_LAIR_DESCRIPTION,
+                    route.endItemLevel,
+                    route.track,
+                    route.slotsBelowEndReward
+                )
+                reason = string.format(
+                    NS.L.GEAR_ROUTE_SEASON_LAIR_REASON,
+                    route.recommendedItemLevel
+                )
+                route.steps = {
+                    string.format(NS.L.GEAR_ROUTE_SEASON_LAIR_STEP_1, difficulty),
+                    NS.L.GEAR_ROUTE_SEASON_LAIR_STEP_2,
+                    string.format(NS.L.GEAR_ROUTE_SEASON_LAIR_STEP_3, route.endItemLevel),
+                }
+                icon = "Interface\\Icons\\INV_Misc_Chest_03"
+                route.rewardText = string.format(NS.L.GEAR_ROUTE_SEASON_LAIR_REWARD, route.endItemLevel)
             end
             if title then
                 route.family = "gear"
@@ -513,8 +575,12 @@ function Rules:FastGearRoute(state)
                 route.reviewedAt = state.progression.reviewedAt
                 route.confidence = state.progression.confidence
                 route.sources = state.progression.sources
+                local targetItem = route.targetItem or {}
                 route.target = {
-                    kind = "gear_route",
+                    kind = route.kind == "crafted_gear" and "item" or "gear_route",
+                    itemID = targetItem.itemID,
+                    itemLink = targetItem.itemLink,
+                    name = targetItem.name,
                     iconFileID = icon,
                     acquisition = "verified_route",
                 }
@@ -522,7 +588,9 @@ function Rules:FastGearRoute(state)
                     id = "season_gear_route_" .. route.kind,
                     rule = "FastGearRoute",
                     category = "gear",
-                    priority = NS.Recommendation.Scoring.PRIORITY.FAST_GEAR_ROUTE,
+                    priority = route.kind == "crafted_gear"
+                        and NS.Recommendation.Scoring.PRIORITY.CURATED_GEAR_ROUTE
+                        or NS.Recommendation.Scoring.PRIORITY.FAST_GEAR_ROUTE,
                     importance = NS.Constants.IMPORTANCE.HIGH,
                     title = title,
                     description = description,
@@ -741,6 +809,21 @@ function Rules:GreatVault(state)
         local activity = group and group[1]
         if activity and not (key == "dungeon" and dungeonPlan) then
             local index = activity.metadata.index or 0
+            local progress = tonumber(activity.metadata.progress) or 0
+            local threshold = tonumber(activity.metadata.threshold) or 0
+            local missing = math.max(0, threshold - progress)
+            local steps
+            if key == "raid" then
+                steps = {
+                    NS.L.VAULT_RAID_LOCKOUT_STEP_1,
+                    string.format(
+                        NS.L.VAULT_RAID_LOCKOUT_STEP_2,
+                        missing,
+                        localizedNoun("boss", missing)
+                    ),
+                    NS.L.VAULT_RAID_LOCKOUT_STEP_3,
+                }
+            end
             recommendations[#recommendations + 1] = NS.Model.Recommendation:New({
                 id = activity.id .. "_unlock",
                 rule = "GreatVault",
@@ -764,6 +847,13 @@ function Rules:GreatVault(state)
                     progress = activity.metadata.progress,
                     followingThreshold = group[2] and group[2].metadata.threshold or nil,
                     futurePreview = activity.metadata.futurePreview,
+                    lockoutGuidance = key == "raid",
+                    steps = steps,
+                    patch = state.progression and state.progression.patch,
+                    reviewedAt = state.progression and state.progression.reviewedAt,
+                    confidence = state.progression and state.progression.confidence,
+                    sources = key == "raid" and state.progression
+                        and state.progression.sources or nil,
                     target = {
                         kind = "vault_reward",
                         itemLink = activity.metadata.rewardItemLink,

@@ -103,6 +103,7 @@ local state = {
     equipment = equipment,
     currencies = {
         { currencyID = 3444, name = "Champion Mistcrest", quantity = 12 },
+        { currencyID = 3445, name = "Hero Mistcrest", quantity = 80 },
     },
     mythicPlus = {
         active = true,
@@ -146,6 +147,18 @@ assert(state.progression.gearRoute.endItemLevel == 305, "The +7 end reward is in
 assert(state.progression.gearRoute.vaultItemLevel == 315, "The +7 Vault reward is incorrect.")
 assert(state.progression.bestUpgrade.standardGap == 8, "The standard Mistcrest gap is incorrect.")
 assert(state.progression.dungeonVault.missingRuns == 3, "The second Vault option should need three more +7 runs.")
+assert(#state.progression.gearRoutes == 3,
+    "Active gearing should include Mythic Plus, crafted gear, and the best eligible Lair tier.")
+assert(state.progression.gearRoutes[2].kind == "crafted_gear",
+    "The character's crafted gear opportunity was not normalized.")
+assert(state.progression.gearRoutes[2].item.slotKey == "neck",
+    "Crafted gear should target the weakest detected non-tier slot.")
+assert(state.progression.gearRoutes[2].currencyGap == 0,
+    "The ready Hero Mistcrest craft should not report a currency gap.")
+assert(state.progression.gearRoutes[3].kind == "season_lair"
+    and state.progression.gearRoutes[3].difficulty == "heroic"
+    and state.progression.gearRoutes[3].endItemLevel == 305,
+    "Item level 300 should select the published Heroic Lair tier.")
 
 local weekly = NS.Data.Weekly:Collect(state.vault)
 assert(weekly.vault.bestRewardItemLevel == 315, "The best earned Vault reward item level was not summarized.")
@@ -174,6 +187,54 @@ assert(vaultRecommendations[1].metadata.family == "weekly",
     "Dynamic Great Vault recommendations should cover the weekly family.")
 assert(#vaultRecommendations[1].goals == 1 and vaultRecommendations[1].goals[1] == "gear",
     "Dynamic weekly work should remain in gearing instead of campaign progression.")
+
+local activeGearRecommendations = NS.Recommendation.Rules:FastGearRoute(state)
+assert(#activeGearRecommendations == 3,
+    "All three character-specific active gearing routes should be rendered.")
+assert(activeGearRecommendations[2].metadata.kind == "crafted_gear",
+    "The crafted gear recommendation was not rendered.")
+assert(activeGearRecommendations[2].metadata.target.itemLink == "item:1002",
+    "The crafted route should hover the equipped item it proposes replacing.")
+assert(#activeGearRecommendations[2].metadata.steps == 3,
+    "The crafted gear route should include target, reagent, and order steps.")
+assert(activeGearRecommendations[3].metadata.kind == "season_lair"
+    and activeGearRecommendations[3].title:match("Heroic"),
+    "The exact eligible Lair difficulty was not rendered.")
+
+state.currencies[2].quantity = 50
+local craftShortfall = NS.Data.Progression:Collect(state).gearRoutes[2]
+assert(craftShortfall.kind == "crafted_gear" and craftShortfall.currencyGap == 30,
+    "Crafted gear should expose the exact missing Mistcrest amount.")
+state.currencies[2].quantity = 80
+
+local raidVaultRecommendations = NS.Recommendation.Rules:GreatVault({
+    character = state.character,
+    progression = {
+        patch = state.progression.patch,
+        reviewedAt = state.progression.reviewedAt,
+        confidence = state.progression.confidence,
+        sources = state.progression.sources,
+    },
+    vault = {
+        dataReady = true,
+        retired = false,
+        rewardsAvailable = false,
+        activities = {
+            {
+                id = "vault_raid_2",
+                available = true,
+                completed = false,
+                metadata = { vaultTypeKey = "raid", index = 2, threshold = 4, progress = 2 },
+            },
+        },
+    },
+})
+assert(#raidVaultRecommendations == 1 and raidVaultRecommendations[1].metadata.lockoutGuidance == true,
+    "Raid Vault guidance should be marked lockout-aware.")
+assert(#raidVaultRecommendations[1].metadata.steps == 3,
+    "Raid Vault guidance should include lockout, boss-count, and stopping steps.")
+assert(raidVaultRecommendations[1].metadata.steps[2]:match("2 uncleared"),
+    "Raid lockout guidance should state the exact remaining boss count.")
 
 state.mythicPlus.active = false
 state.character.averageItemLevel = 300

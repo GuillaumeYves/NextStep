@@ -42,6 +42,75 @@ pack.routes[#pack.routes + 1] = {
 }
 
 pack.routes[#pack.routes + 1] = {
+    id = "12_1_pet_preyhunters_prismguard",
+    goal = "pets",
+    category = "collection",
+    priorityKey = "CURATED_COLLECTION_GUARANTEED",
+    importance = "USEFUL",
+    titleKey = "ROUTE_PET_PREYHUNTER_PRISMGUARD_TITLE",
+    descriptionKey = "ROUTE_PET_PREYHUNTER_PRISMGUARD_DESCRIPTION",
+    reasonKey = "ROUTE_PET_PREYHUNTER_PRISMGUARD_REASON",
+    stepKeys = {
+        "ROUTE_PREY_TRACK_STEP_1",
+        "ROUTE_PET_PREYHUNTER_PRISMGUARD_STEP_2",
+        "ROUTE_PREY_TRACK_VENDOR_STEP",
+    },
+    requirements = {
+        atMaxLevel = true,
+        seasonPhase = "active",
+        petCreatureNotCollected = { 266833 },
+    },
+    sourceIDs = { "blizzardSeason2Schedule", "wowheadPreyhunterPrismguard" },
+    confidence = "high",
+    evidence = "season_track_reward",
+    metadata = {
+        family = "collection_guaranteed",
+        creatureID = 266833,
+        speciesID = 5076,
+        questID = 96004,
+        trackLevel = 8,
+        featured = true,
+    },
+}
+
+pack.routes[#pack.routes + 1] = {
+    id = "12_1_pet_ulatook",
+    goal = "pets",
+    goals = { "pets", "achievements" },
+    category = "collection",
+    priorityKey = "CURATED_COLLECTION_ACHIEVEMENT",
+    importance = "HIGH",
+    titleKey = "ROUTE_PET_ULATOOK_TITLE",
+    descriptionKey = "ROUTE_PET_ULATOOK_DESCRIPTION",
+    reasonKey = "ROUTE_PET_ULATOOK_REASON",
+    stepKeys = {
+        "ROUTE_PET_ULATOOK_STEP_1",
+        "ROUTE_PET_ULATOOK_STEP_2",
+        "ROUTE_PET_ULATOOK_STEP_3",
+    },
+    requirements = {
+        atMaxLevel = true,
+        seasonPhase = "active",
+        petCreatureNotCollected = { 270425 },
+        achievementIncomplete = { 63609 },
+    },
+    sourceIDs = {
+        "blizzardVenomousAbyss",
+        "wowheadNoEggScramble",
+        "wowheadUlatook",
+    },
+    confidence = "high",
+    evidence = "achievement_reward",
+    metadata = {
+        family = "collection_achievement",
+        creatureID = 270425,
+        speciesID = 5130,
+        achievementID = 63609,
+        featured = true,
+    },
+}
+
+pack.routes[#pack.routes + 1] = {
     id = "12_1_pet_coiled_isle_safari",
     goal = "pets",
     goals = { "pets", "achievements" },

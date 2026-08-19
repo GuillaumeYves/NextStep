@@ -119,6 +119,7 @@ assert(routeFamilies.raid, "Raid access coverage is missing.")
 assert(routeFamilies.collection_guaranteed, "Guaranteed collection coverage is missing.")
 assert(routeFamilies.collection_achievement, "Achievement collection coverage is missing.")
 assert(routeFamilies.collection_chance, "Chance collection coverage is missing.")
+assert(#pack.routes >= 23, "The expanded 12.1 route deck is incomplete.")
 local priorities = NS.Recommendation.Scoring.PRIORITY
 assert(priorities.CURATED_PATCH_CAMPAIGN > priorities.CURATED_PATCH_STORY
     and priorities.CURATED_PATCH_STORY > priorities.CURATED_PATCH_OUTDOOR
@@ -208,6 +209,36 @@ assert(findRoute(routes, "12_1_raid_venomous_abyss"), "The active Season 2 raid 
 assert(findRoute(routes, "12_1_mount_writhing_brood"), "The seasonal chance route did not fire in season.")
 assert(findRoute(routes, "12_1_mount_writhing_brood").metadata.target.dropRateKnown == false,
     "An unpublished chance reward must not invent a drop rate.")
+local preyMount = findRoute(routes, "12_1_mount_preyhunters_fury")
+assert(preyMount and preyMount.metadata.target.itemLink == "item:275660",
+    "The Preyhunter's Fury item target was not preserved.")
+assert(preyMount.metadata.target.acquisition == "guaranteed",
+    "A fixed Prey track unlock should be labeled guaranteed.")
+local ratingMount = findRoute(routes, "12_1_mount_breath_of_ruin")
+assert(ratingMount and ratingMount.metadata.target.achievementLink == "achievement:62449",
+    "The Season 2 rating mount should expose its achievement tooltip.")
+local raidMount = findRoute(routes, "12_1_mount_primeval_skyfriend")
+assert(raidMount and raidMount.metadata.target.itemLink == "item:275658",
+    "The Mythic Ula'tek mount target was not preserved.")
+assert(raidMount.metadata.target.dropRateKnown == false,
+    "The limited Mythic raid mount must not invent a personal drop rate.")
+local preyPet = findRoute(routes, "12_1_pet_preyhunters_prismguard")
+assert(preyPet and preyPet.metadata.target.speciesID == 5076,
+    "The Preyhunter's Prismguard species target was not preserved.")
+local raidPet = findRoute(routes, "12_1_pet_ulatook")
+assert(raidPet and raidPet.metadata.target.speciesID == 5130,
+    "The Ula'took species target was not preserved.")
+assert(raidPet.metadata.target.achievementLink == "achievement:63609",
+    "The Ula'took route should expose the No Egg Scramble tooltip.")
+assert(findRoute(routes, "12_1_outdoor_prey_season_2"),
+    "The incomplete Season 2 Prey unlock route was not selected.")
+completedQuests[96004] = true
+routes = collect(90, 90, 280, "active")
+assert(not findRoute(routes, "12_1_outdoor_prey_season_2"),
+    "The completed Season 2 Prey unlock route remained visible.")
+assert(findRoute(routes, "12_1_mount_preyhunters_fury"),
+    "Completing the Prey introduction should not hide its uncollected track rewards.")
+completedQuests[96004] = false
 completedAchievements[63359] = true
 routes = collect(90, 90, 280, "active")
 assert(not findRoute(routes, "12_1_mount_auriferous_venomfang"),
@@ -252,8 +283,8 @@ for _, recommendation in ipairs(routeRecommendations) do
         end
     end
 end
-assert(achievementRecommendations == 2,
-    "Both achievement-backed collection routes should appear in the achievement category.")
+assert(achievementRecommendations == 4,
+    "All achievement-backed collection routes should appear in the achievement category.")
 
 local catalogRecommendations = NS.Recommendation.Rules:PatchCatalog({
     curatedRoutes = routes,
@@ -278,6 +309,8 @@ assert(#catalogRecommendations == 1 and catalogRecommendations[1].title:match("T
 
 assert(type(pack.progression) == "table", "The progression meta table is missing.")
 assert(#pack.progression.mythicPlusRewards == 8, "The Season 2 Mythic Plus reward bands are incomplete.")
+assert(#pack.progression.craftedGear == 2, "The Hero and Myth crafted gear tiers are incomplete.")
+assert(#pack.progression.lairRewards == 4, "The published Tidebound Grotto tiers are incomplete.")
 for _, sourceID in ipairs(pack.progression.sourceIDs) do
     assert(pack.sources[sourceID], "Unknown progression source: " .. sourceID)
 end

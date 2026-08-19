@@ -201,3 +201,33 @@ routes[#routes + 1] = {
         featured = true,
     },
 }
+
+routes[#routes + 1] = {
+    id = "12_1_outdoor_prey_season_2",
+    goal = "progression",
+    category = "progression",
+    priorityKey = "CURATED_PATCH_OUTDOOR",
+    importance = "HIGH",
+    titleKey = "ROUTE_PATCH_PREY_TITLE",
+    descriptionKey = "ROUTE_PATCH_PREY_DESCRIPTION",
+    reasonKey = "ROUTE_PATCH_PREY_REASON",
+    stepKeys = {
+        "ROUTE_PATCH_PREY_STEP_1",
+        "ROUTE_PATCH_PREY_STEP_2",
+        "ROUTE_PATCH_PREY_STEP_3",
+    },
+    requirements = {
+        atMaxLevel = true,
+        seasonPhase = "active",
+        questIncomplete = { 96004 },
+    },
+    sourceIDs = { "blizzardSeason2Schedule" },
+    confidence = "high",
+    evidence = "official_activity_route",
+    metadata = {
+        family = "delve_outdoor",
+        activity = "prey_season_2",
+        startQuestID = 96004,
+        featured = true,
+    },
+}
