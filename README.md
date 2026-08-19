@@ -160,7 +160,7 @@ Document the source and season beside each added ID.
 
 ## Development status
 
-Version 0.10.0 adds concrete multi-step 12.1 routes, fixed character and account completion bars, visible threshold colors, and typed native hovers for item, mount, and achievement targets. These changes require manual in-game validation.
+Version 0.10.0 adds concrete multi-step 12.1 routes, fixed character and account completion bars, visible threshold colors, Blizzard-style progress framing, stable scroll state, and typed native hovers for item, mount, and achievement targets. These changes require manual in-game validation.
 
 ## Known limitations
 
@@ -218,6 +218,7 @@ lua5.1 tests/route-api.lua
 lua5.1 tests/tooltips.lua
 lua5.1 tests/patch-catalog.lua
 lua5.1 tests/patch-progress.lua
+lua5.1 tests/ui-layout.lua
 lua5.1 tests/progression-analysis.lua
 ```
 

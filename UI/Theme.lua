@@ -9,9 +9,9 @@ Theme.COLORS = {
     mutedGold = { 0.72, 0.57, 0.28 },
     text = { 0.92, 0.86, 0.72 },
     mutedText = { 0.64, 0.6, 0.52 },
-    panel = { 0.10, 0.075, 0.04, 0.96 },
-    inset = { 0.025, 0.022, 0.018, 0.94 },
-    hover = { 0.16, 0.12, 0.065, 0.98 },
+    panel = { 0.045, 0.052, 0.065, 0.96 },
+    inset = { 0.018, 0.022, 0.03, 0.96 },
+    hover = { 0.075, 0.09, 0.12, 0.98 },
 }
 
 Theme.GOAL_COLORS = {
@@ -98,8 +98,41 @@ function Theme:AddDivider(parent, left, right, y)
     divider:SetAtlas("evergreen-weeklyrewards-divider", false)
     divider:SetPoint("LEFT", left or 12, y or 0)
     divider:SetPoint("RIGHT", right or -12, y or 0)
-    divider:SetHeight(8)
+    divider:SetHeight(4)
     return divider
+end
+
+function Theme:ApplyProgressBar(bar)
+    if bar.nextStepProgressBackground then
+        return
+    end
+
+    bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+
+    local background = bar:CreateTexture(nil, "BACKGROUND", nil, -1)
+    background:SetAllPoints()
+    background:SetColorTexture(0.04, 0.07, 0.18, 0.96)
+
+    local borderLeft = bar:CreateTexture(nil, "ARTWORK")
+    borderLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-Skills-BarBorder")
+    borderLeft:SetSize(9, 22)
+    borderLeft:SetTexCoord(0.007843, 0.043137, 0.193548, 0.774193)
+    borderLeft:SetPoint("LEFT", -3, 0)
+
+    local borderRight = bar:CreateTexture(nil, "ARTWORK")
+    borderRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-Skills-BarBorder")
+    borderRight:SetSize(9, 22)
+    borderRight:SetTexCoord(0.043137, 0.007843, 0.193548, 0.774193)
+    borderRight:SetPoint("RIGHT", 3, 0)
+
+    local borderMiddle = bar:CreateTexture(nil, "ARTWORK")
+    borderMiddle:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-Skills-BarBorder")
+    borderMiddle:SetTexCoord(0.113726, 0.1490196, 0.193548, 0.774193)
+    borderMiddle:SetPoint("TOPLEFT", borderLeft, "TOPRIGHT")
+    borderMiddle:SetPoint("BOTTOMRIGHT", borderRight, "BOTTOMLEFT")
+
+    bar.nextStepProgressBackground = background
+    bar.nextStepProgressBorder = { borderLeft, borderMiddle, borderRight }
 end
 
 function Theme:AddTopBand(frame, height)
@@ -124,19 +157,19 @@ end
 function Theme:ApplyInset(frame)
     frame:SetBackdrop(insetBackdrop)
     frame:SetBackdropColor(unpack(self.COLORS.inset))
-    frame:SetBackdropBorderColor(0.32, 0.25, 0.14, 1)
+    frame:SetBackdropBorderColor(0.25, 0.22, 0.17, 1)
 end
 
 function Theme:ApplyCard(frame)
     frame:SetBackdrop(insetBackdrop)
     frame:SetBackdropColor(unpack(self.COLORS.panel))
-    frame:SetBackdropBorderColor(0.28, 0.22, 0.13, 1)
+    frame:SetBackdropBorderColor(0.24, 0.21, 0.16, 1)
 end
 
 function Theme:SetCardHovered(frame, hovered)
     if hovered then
         frame:SetBackdropColor(unpack(self.COLORS.hover))
-        frame:SetBackdropBorderColor(0.82, 0.63, 0.3, 1)
+        frame:SetBackdropBorderColor(0.76, 0.62, 0.34, 1)
     else
         self:ApplyCard(frame)
     end

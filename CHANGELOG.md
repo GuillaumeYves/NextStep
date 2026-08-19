@@ -20,10 +20,13 @@ All notable changes to NextStep are documented here.
 
 - Dynamic Great Vault and character-specific gearing routes remain under Gear instead of appearing in Campaign and Unlocks
 - The 12.1 route pack review date and official Blizzard sources now cover the live Season 2 rollout
+- Progress bars and recommendation surfaces now use Blizzard-style borders, spacing, and a cooler native panel palette
 
 ### Fixed
 
 - Curated routes and patch catalog entries no longer disappear when their recommendation rules run
+- Background data refreshes preserve the current plan scroll position
+- Great Vault dividers are centered in the space between reward rows and no longer overlap entries
 
 ## 0.9.0 - 2026-08-16
 

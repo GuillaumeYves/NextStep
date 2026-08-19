@@ -62,6 +62,9 @@ jobs:
       - name: Test combined patch completion
         run: lua5.1 tests/patch-progress.lua
 
+      - name: Test scroll preservation and panel layout
+        run: lua5.1 tests/ui-layout.lua
+
       - name: Test character progression analysis
         run: lua5.1 tests/progression-analysis.lua
 
