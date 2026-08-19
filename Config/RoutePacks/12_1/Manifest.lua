@@ -150,6 +150,41 @@ NS.RoutePacks["12.1"] = {
             titleKey = "SOURCE_WOWHEAD_COILED_ISLE_SAFARI",
             url = "https://www.wowhead.com/achievement=62492/the-coiled-isle-safari",
         },
+        wowheadPreyhunterFury = {
+            kind = "database",
+            titleKey = "SOURCE_WOWHEAD_PREYHUNTER_FURY",
+            url = "https://www.wowhead.com/item=275660/preyhunters-fury",
+        },
+        wowheadPreyhunterPrismguard = {
+            kind = "database",
+            titleKey = "SOURCE_WOWHEAD_PREYHUNTER_PRISMGUARD",
+            url = "https://www.wowhead.com/item=275702/preyhunters-prismguard",
+        },
+        wowheadUlatook = {
+            kind = "database",
+            titleKey = "SOURCE_WOWHEAD_ULATOOK",
+            url = "https://www.wowhead.com/item=279387/ulatook",
+        },
+        wowheadNoEggScramble = {
+            kind = "database",
+            titleKey = "SOURCE_WOWHEAD_NO_EGG_SCRAMBLE",
+            url = "https://www.wowhead.com/achievement=63609/no-egg-scramble",
+        },
+        wowheadBreathOfRuin = {
+            kind = "database",
+            titleKey = "SOURCE_WOWHEAD_BREATH_OF_RUIN",
+            url = "https://www.wowhead.com/item=276882/breath-of-ruin",
+        },
+        wowheadKeystoneLegendSeason2 = {
+            kind = "database",
+            titleKey = "SOURCE_WOWHEAD_KEYSTONE_LEGEND_SEASON_2",
+            url = "https://www.wowhead.com/achievement=62449/midnight-keystone-legend-season-2",
+        },
+        wowheadPrimevalSkyfriend = {
+            kind = "database",
+            titleKey = "SOURCE_WOWHEAD_PRIMEVAL_SKYFRIEND",
+            url = "https://www.wowhead.com/item=275658/primeval-skyfriend",
+        },
         wowheadPatchMountCatalog = {
             kind = "database",
             titleKey = "SOURCE_WOWHEAD_PATCH_MOUNT_CATALOG",

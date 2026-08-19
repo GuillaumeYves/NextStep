@@ -202,7 +202,8 @@ local function applyProgressMetadata(metadata, route, progress)
 end
 
 local function acquisitionForEvidence(evidence)
-    if evidence == "fixed_treasure" or evidence == "quest_reward" then
+    if evidence == "fixed_treasure" or evidence == "quest_reward"
+        or evidence == "season_track_reward" then
         return "guaranteed"
     elseif evidence == "achievement_reward" then
         return "achievement"

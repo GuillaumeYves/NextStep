@@ -34,6 +34,78 @@ local function countSlotsBelow(items, itemLevel)
     return count
 end
 
+local tierSlots = {
+    head = true,
+    shoulder = true,
+    chest = true,
+    hands = true,
+    legs = true,
+}
+
+local function weakestCraftSlot(items, targetItemLevel)
+    local selected
+    for _, item in ipairs(items or {}) do
+        if not tierSlots[item.slotKey]
+            and type(item.itemLevel) == "number"
+            and item.itemLevel < targetItemLevel
+            and (not selected or item.itemLevel < selected.itemLevel) then
+            selected = item
+        end
+    end
+    return selected
+end
+
+local function resolveCraftedGear(meta, equipment, currencies, averageItemLevel)
+    if type(averageItemLevel) ~= "number" then
+        return nil
+    end
+    for _, tier in ipairs(meta.craftedGear or {}) do
+        if averageItemLevel >= tier.recommendedItemLevel then
+            local item = weakestCraftSlot(equipment.items, tier.minItemLevel)
+            local currency = currencies[tier.currencyID]
+            local quantity = currency and tonumber(currency.quantity)
+            if item and type(quantity) == "number" then
+                return {
+                    kind = "crafted_gear",
+                    item = item,
+                    currency = currency,
+                    currencyQuantity = quantity,
+                    currencyCost = tier.cost,
+                    currencyGap = math.max(0, tier.cost - quantity),
+                    minItemLevel = tier.minItemLevel,
+                    maxItemLevel = tier.maxItemLevel,
+                    slotsBelowEndReward = countSlotsBelow(equipment.items, tier.minItemLevel),
+                }
+            end
+        end
+    end
+    return nil
+end
+
+local function resolveLairRoute(meta, equipment, averageItemLevel)
+    if type(averageItemLevel) ~= "number" then
+        return nil
+    end
+    local selected
+    for _, reward in ipairs(meta.lairRewards or {}) do
+        if averageItemLevel >= reward.recommendedItemLevel
+            and countSlotsBelow(equipment.items, reward.itemLevel) > 0 then
+            selected = reward
+        end
+    end
+    if not selected then
+        return nil
+    end
+    return {
+        kind = "season_lair",
+        difficulty = selected.difficulty,
+        recommendedItemLevel = selected.recommendedItemLevel,
+        endItemLevel = selected.itemLevel,
+        track = selected.track,
+        slotsBelowEndReward = countSlotsBelow(equipment.items, selected.itemLevel),
+    }
+end
+
 local function selectGearBreakpoint(meta, averageItemLevel)
     if type(averageItemLevel) ~= "number" then
         return nil
@@ -183,6 +255,7 @@ function Progression:Collect(state)
     end
 
     local equipment = state.equipment or {}
+    local currencies = currencyMap(state.currencies)
     local targetLevel = mythicPlus.active and selectGearBreakpoint(meta, character.averageItemLevel) or nil
     local reward = targetLevel and rewardForLevel(meta, targetLevel) or nil
     local gearRoute
@@ -198,6 +271,16 @@ function Progression:Collect(state)
             slotsBelowVaultReward = countSlotsBelow(equipment.items, reward.vaultItemLevel),
         }
         gearRoutes[#gearRoutes + 1] = gearRoute
+
+        local craftedGear = resolveCraftedGear(meta, equipment, currencies, character.averageItemLevel)
+        if craftedGear then
+            gearRoutes[#gearRoutes + 1] = craftedGear
+        end
+
+        local lairRoute = resolveLairRoute(meta, equipment, character.averageItemLevel)
+        if lairRoute then
+            gearRoutes[#gearRoutes + 1] = lairRoute
+        end
     elseif mythicPlus.dataReady and not mythicPlus.active then
         local baseline = meta.preMythicPlus.mythicZeroItemLevel
         local slotsBelowBaseline = countSlotsBelow(equipment.items, baseline)
@@ -236,7 +319,7 @@ function Progression:Collect(state)
         sources = resolveSources(pack, meta.sourceIDs),
         gearRoute = gearRoute,
         gearRoutes = gearRoutes,
-        bestUpgrade = resolveUpgrade(meta, equipment, currencyMap(state.currencies)),
+        bestUpgrade = resolveUpgrade(meta, equipment, currencies),
         dungeonVault = resolveDungeonVault(meta, state, targetLevel),
     }
 end

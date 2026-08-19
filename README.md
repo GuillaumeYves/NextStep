@@ -14,6 +14,8 @@ The first production milestone provides:
 - Great Vault example item levels, exact raid encounter progress, and current-week Mythic Plus run analysis
 - Equipped-item upgrade tracks, remaining ranks, and maximum item levels
 - Character-specific Season 2 gear and Dungeon Vault reward breakpoints
+- Character-specific Hero and Myth crafted-gear routes that target the weakest non-tier equipped slot
+- Equipment-aware World, Normal, Heroic, and Mythic Tidebound Grotto reward routes
 - Verified 12.1 Mistcrest balances and standard-cost gaps
 - All five Mistcrests with live icons, balances, and client-provided weekly or cumulative cap progress
 - Exact XP progress and rested XP visibility below maximum level
@@ -110,11 +112,14 @@ The 12.1 pack was reviewed on 2026-08-19 and currently contains:
 - Reward breakpoints at +2, +4, +7, and +10
 - Mythic 0 item level 292 Champion 1/6 rewards with the current weekly pre-season lockout
 - World Lair item level 279 Veteran 1/6 guidance only for equipped slots below that reward
+- Normal, Heroic, and Mythic Tidebound Grotto guidance at item levels 292, 305, and 318, selected from the character's equipped item level and useful slots
+- Hero and Myth crafted-gear guidance for item levels 305-318 and 318-331, including the weakest non-tier slot and the exact 80-Mistcrest cost or remaining gap
 - Legacy of the Amani campaign completion through Dead End, followed by the Coiled Isle activity unlock route
 - Coiled Isle public event and Curse Surge steps, including the documented Cursed Fishing unlock
 - Separate Vaults of Atal'Utek public-event and Tokka local-story and reputation routes
 - The three new 12.1 Delves as playable content unlocks through Journeys
 - Venomous Abyss access and Great Vault boss thresholds without encounter or combat guidance
+- Raid Vault routes that direct the player through Raid Info before joining a run and state the exact number of additional uncleared bosses required for the next slot
 - Dynamic weekly Great Vault and character-specific gearing work kept under Gear instead of Campaign and Unlocks
 - Adventurer, Veteran, Champion, Hero, and Myth Mistcrest definitions
 - The Dusk Grimlynx route through the History Lesson quest
@@ -122,6 +127,9 @@ The 12.1 pack was reviewed on 2026-08-19 and currently contains:
 - The guaranteed Delver's Arcane Golem treasure in Gnarldor Isle
 - The 22-criterion Treasures of the Coiled Isle route for the Auriferous Venomfang
 - The chance-based Writhing Brood route, active only while Mythic Plus is active
+- The Season 2 Prey unlock through A Slithering Threat, followed by the level 8 Preyhunter's Prismguard and level 10 Preyhunter's Fury reward routes
+- The Midnight Keystone Legend: Season 2 route for Breath of Ruin at Mythic Plus rating 3000
+- The No Egg Scramble route for Ula'took and the Mythic Ula'tek chance route for Primeval Skyfriend
 - The eight-species Coiled Isle Safari route for the Zesty battle pet
 - Every public achievement in the reviewed 12.1 database snapshot, filtered against live character completion
 - Every supported 12.1 mount and collectible pet record, filtered against the live Mount and Pet Journals
@@ -160,7 +168,7 @@ Document the source and season beside each added ID.
 
 ## Development status
 
-Version 0.10.0 adds concrete multi-step 12.1 routes, fixed character and account completion bars, visible threshold colors, Blizzard-style progress framing, stable scroll state, and typed native hovers for item, mount, and achievement targets. These changes require manual in-game validation.
+Version 0.10.0 adds concrete multi-step 12.1 routes, curated Season 2 collection paths, character-specific crafted-gear and Lair guidance, practical raid-lockout steps, fixed character and account completion bars, visible threshold colors, Blizzard-style progress framing, stable scroll state, and typed native hovers for item, mount, and achievement targets. These changes require manual in-game validation.
 
 ## Known limitations
 
@@ -172,10 +180,12 @@ Version 0.10.0 adds concrete multi-step 12.1 routes, fixed character and account
 - Item levels can be temporarily unavailable and are shown as unavailable instead of guessed.
 - Upgrade eligibility is read from equipped item data. Exact discounted upgrade cost is unavailable away from an upgrade vendor, so the addon reports the standard 20 Mistcrest gap and states that discounts can lower it.
 - Gear routes use published reward bands and known slots below each band. They cannot promise that a random drop will usefully replace a specific item.
+- Crafted-gear routes identify a weak non-tier slot and the relevant Mistcrest tier, but they cannot inspect known recipes, chosen stats, embellishments, commission costs, or the final crafting-order result. Confirm the preview before placing an order.
+- Raid Vault guidance combines the live Vault boss count with a concrete Raid Info procedure. The addon does not read the saved status of each raid boss directly, so Raid Info remains authoritative before joining a group.
 - Curated data is static until the addon files are updated. It is not downloaded while WoW is running.
 - The public patch catalog uses the client source text when an exact curated route is unavailable. If the client source is vague or absent, NextStep says so instead of inventing steps.
 - The addon cannot observe every intermediate route step. It shows up to three verified ordered steps in each route row and keeps the full path in the card tooltip.
-- Version 0.9.0 changes have not been tested inside a live WoW client in this repository session.
+- Version 0.10.0 changes have not been tested inside a live WoW client in this repository session.
 - Localized layouts and French wording still require in-game review.
 - Client locales other than English and French currently fall back to English.
 - Chance-based rewards are labeled as chance-based and never show an invented drop rate.

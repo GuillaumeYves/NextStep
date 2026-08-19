@@ -15,12 +15,18 @@ All notable changes to NextStep are documented here.
 - Typed native reward-item and achievement tooltips, with Mount Journal fallback only when no reward item exists
 - A Season-gated Venomous Abyss access and reward route under Gear
 - Explicit coverage metadata and tests for campaign, weekly, Delve and outdoor, gear, raid, guaranteed or achievement collections, and chance collections
+- Curated Season 2 collection routes for Preyhunter's Fury, Preyhunter's Prismguard, Breath of Ruin, Ula'took, and Primeval Skyfriend
+- A character-gated route to unlock the Season 2 Prey track through A Slithering Threat
+- Character-specific Hero and Myth crafted-gear routes with exact Mistcrest costs and weakest non-tier slot targeting
+- Equipment-aware World, Normal, Heroic, and Mythic Tidebound Grotto reward routes
+- Raid Vault lockout steps that state the exact number of additional uncleared bosses needed for the next slot
 
 ### Changed
 
 - Dynamic Great Vault and character-specific gearing routes remain under Gear instead of appearing in Campaign and Unlocks
 - The 12.1 route pack review date and official Blizzard sources now cover the live Season 2 rollout
 - Progress bars and recommendation surfaces now use Blizzard-style borders, spacing, and a cooler native panel palette
+- Season 2 catalog rewards now use deterministic multi-step acquisition paths where their requirements are verifiable
 
 ### Fixed
 

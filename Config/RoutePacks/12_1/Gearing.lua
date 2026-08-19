@@ -50,6 +50,30 @@ pack.progression = {
         { averageItemLevelBelow = 305, mythicPlusLevel = 7 },
         { mythicPlusLevel = 10 },
     },
+    craftedGear = {
+        {
+            key = "myth",
+            currencyID = 3446,
+            cost = 80,
+            recommendedItemLevel = 312,
+            minItemLevel = 318,
+            maxItemLevel = 331,
+        },
+        {
+            key = "hero",
+            currencyID = 3445,
+            cost = 80,
+            recommendedItemLevel = 299,
+            minItemLevel = 305,
+            maxItemLevel = 318,
+        },
+    },
+    lairRewards = {
+        { difficulty = "world", recommendedItemLevel = 273, itemLevel = 279, track = "Veteran 1/6" },
+        { difficulty = "normal", recommendedItemLevel = 286, itemLevel = 292, track = "Champion 1/6" },
+        { difficulty = "heroic", recommendedItemLevel = 299, itemLevel = 305, track = "Hero 1/6" },
+        { difficulty = "mythic", recommendedItemLevel = 312, itemLevel = 318, track = "Myth 1/6" },
+    },
     preMythicPlus = {
         mythicZeroItemLevel = 292,
         normalLairItemLevel = 292,
